@@ -34,7 +34,8 @@
     "name": "eosio-ssi-toolkit",
     "author": "Jack Tanner",
     "module": "dist/eosio-ssi-toolkit.esm.js",
-    "size-limit": [{
+    "size-limit": [
+        {
             "path": "dist/eosio-ssi-toolkit.cjs.production.min.js",
             "limit": "10 KB"
         },
@@ -50,5 +51,8 @@
         "tsdx": "^0.14.1",
         "tslib": "^2.4.0",
         "typescript": "^3.9.10"
+    },
+    "dependencies": {
+        "eosio-did": "^0.1.2"
     }
 }
