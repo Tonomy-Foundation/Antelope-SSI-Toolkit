@@ -2,6 +2,7 @@ import { EosioOptions, Authority } from 'eosio-did';
 
 type url = string;
 type did = url;
+type didurl = string;
 
 interface CredentialUnsigned {
     "@context": url[];
@@ -33,8 +34,8 @@ export default interface Credentials {
     get options(): EosioOptions;
     set options(options: EosioOptions);
 
-    issue(id: did, verificationMethod: string, options?: EosioOptions): Promise<CredentialSigned>;
-    verify(did: string, options?: EosioOptions): Promise<boolean>;
+    issue(verificationMethod: didurl, credential: CredentialUnsigned, options?: EosioOptions): Promise<CredentialSigned>;
+    verify(credential: CredentialSigned, options?: EosioOptions): Promise<boolean>;
 }
 
 export { CredentialUnsigned, CredentialSigned, Proof, JwsProof };

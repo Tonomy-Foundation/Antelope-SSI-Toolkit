@@ -1,12 +1,41 @@
-# TSDX User Guide
+# EOSIO Self-sovereign identity (SSI) Toolkit
 
-Congrats! You just saved yourself hours of work by bootstrapping this project with TSDX. Let’s get you oriented with what’s here and how to use it.
+A toolkit allowing EOSIO accounts to send verifiable credentials and use DIDComm.
 
-> This TSDX setup is meant for developing libraries (not apps!) that can be published to NPM. If you’re looking to build a Node app, you could use `ts-node-dev`, plain `ts-node`, or simple `tsc`.
+# Usage
+## Create a and verify a credential
 
-> If you’re new to TypeScript, checkout [this handy cheatsheet](https://devhints.io/typescript)
+```ts
+const myId = "did:eosio:telos:mytelosaccount";
+const universityId = "did:eosio:telos:exampleuniversity";
+const universityVerificationMethod = "did:eosio:telos:exampleuniversity#active";
 
-## Commands
+const credential = {
+  "@context": [
+    "https://www.w3.org/2018/credentials/v1",
+    "https://www.w3.org/2018/credentials/examples/v1"
+  ],
+  id: myId,
+  type: ["VerifiableCredential", "AlumniCredential"],
+  issuer: universityId,
+  issuanceDate: new Date("2010-01-01T19:23:24Z"),
+  credentialSubject: {
+    id: myId,
+    alumniOf: "Example University"
+  }
+};
+
+const credentials = new Credentials();
+const signedCredential = await credentials.issue(universityVerificationMethod, credential);
+console.log(signedCredential);
+
+const verifiedCreedential = await credentials.verify(signedCredential);
+console.log(verifiedCreedential);
+```
+
+# Development and Testing
+
+## Run
 
 TSDX scaffolds your new library inside `/src`.
 
