@@ -24,11 +24,10 @@ describe('Issue and verify credential', () => {
 
     const credentials = new Credentials();
     const signedCredential = await credentials.issue(universityVerificationMethod, credential);
-    console.log(signedCredential);
+    expect(signedCredential.proof).toBeDefined();
+    expect(signedCredential.proof.jws).toBeDefined();
 
     const verifiedCreedential = await credentials.verify(signedCredential);
-    console.log(verifiedCreedential);
-
-    expect(signedCredential).toBeDefined();
+    expect(verifiedCreedential).toBeTruthy();
   });
 });
