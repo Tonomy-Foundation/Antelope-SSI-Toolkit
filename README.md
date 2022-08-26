@@ -1,6 +1,6 @@
-# EOSIO Self-sovereign identity (SSI) Toolkit
+# Antelope (formerly EOSIO) Self-sovereign identity (SSI) Toolkit
 
-A toolkit allowing EOSIO accounts to send verifiable credentials and use DIDComm.
+A toolkit allowing Antelope accounts to send verifiable credentials and use DIDComm.
 
 # Usage
 ## Create a and verify a credential
