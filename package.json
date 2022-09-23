@@ -46,6 +46,8 @@
     ],
     "devDependencies": {
         "@size-limit/preset-small-lib": "^7.0.8",
+        "@types/jest": "^25.2.3",
+        "ethr-did": "^2.3.0",
         "husky": "^8.0.1",
         "size-limit": "^7.0.8",
         "tsdx": "^0.14.1",
@@ -53,6 +55,7 @@
         "typescript": "^3.9.10"
     },
     "dependencies": {
+        "did-jwt-vc": "file:../did-jwt-vc",
         "eosio-did": "^0.1.2"
     }
 }
