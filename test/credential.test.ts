@@ -5,7 +5,7 @@ global.TextDecoder = TextDecoder as any;
 
 import { EthrDID } from 'ethr-did'
 // import EosioDID from 'eosio-did'
-import { Checksum256 } from '@greymass/eosio';
+import { PrivateKey } from '@greymass/eosio';
 import { decodeJWT } from 'did-jwt'
 import { Issuer } from 'did-jwt-vc'
 import { JwtCredentialPayload, createVerifiableCredentialJwt } from 'did-jwt-vc'
@@ -40,20 +40,27 @@ describe('Issue and verify credential', () => {
 
   it('Issues a simple Antelope credential signed by one key', async () => {
     const did = "did:eosio:jungle:tonomytester";
+    const privateKey = PrivateKey.from("5KH76LoG9PhgjQqXCExJP5bHxShk5K6A7QHj723k2AdX5NYUHt7");
+    console.log(privateKey.toString());
 
     const signer = async function (data: string | Uint8Array) {
+      console.log(data.length);
       if (typeof data === 'string') {
+        // TODO is this base64 or base52/58???
         // convert from base64 to hex
         const buffer = Buffer.from(data, 'base64');
         data = buffer.toString('hex');
       }
-      const digest = Checksum256.hash(data);
-      return digest.toString();
+
+      const signature = await privateKey.signMessage(data);
+      return signature.toString();
+      // TODO signature in incorrect format still with prefix and base58 encoding
     }
 
     const keyIssuer: Issuer = {
       did: did + "#key-1",
-      signer
+      signer,
+      alg: "ES256K"
     }
 
     const vcPayload: JwtCredentialPayload = {
