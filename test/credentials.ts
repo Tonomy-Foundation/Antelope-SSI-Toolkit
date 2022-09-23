@@ -1,5 +1,7 @@
 import Credentials, { CredentialUnsigned } from '../src/credentials';
 
+const testprivatekey = '5Jr3KwQ2yB7sDhrZtGf4VcnwhfawWizibHBxc3kk6nXz9ZashS4';
+
 describe('Issue and verify credential', () => {
   it('Issues a credential', async () => {
 
