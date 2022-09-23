@@ -1,6 +1,7 @@
 import Credentials, { CredentialUnsigned } from '../src/credentials';
 
-const testprivatekey = '5Jr3KwQ2yB7sDhrZtGf4VcnwhfawWizibHBxc3kk6nXz9ZashS4';
+const jungleAccount1Key1 = '5Jr3KwQ2yB7sDhrZtGf4VcnwhfawWizibHBxc3kk6nXz9ZashS4';
+const jungleAccount2Key1 = '5HugTPie8ajGCiWR5L82SkYjx8zQ79eawwTReMwHQgHZJuB1nKP';
 
 describe('Issue and verify credential', () => {
   it('Issues a credential', async () => {
