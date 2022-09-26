@@ -8,7 +8,23 @@ import { EthrDID } from 'ethr-did'
 import { PrivateKey } from '@greymass/eosio';
 import { decodeJWT } from 'did-jwt'
 import { Issuer } from 'did-jwt-vc'
-import { JwtCredentialPayload, createVerifiableCredentialJwt } from 'did-jwt-vc'
+import { JwtCredentialPayload, createVerifiableCredentialJwt, addSignatureToJwt } from 'did-jwt-vc'
+
+function createSigner(privateKey: PrivateKey) {
+  return async (data: string | Uint8Array) => {
+    console.log(data.length);
+    if (typeof data === 'string') {
+      // TODO is this base64 or base52/58???
+      // convert from base64 to hex
+      const buffer = Buffer.from(data, 'base64');
+      data = buffer.toString('hex');
+    }
+
+    const signature = await privateKey.signMessage(data);
+    return signature.toString();
+    // TODO signature in incorrect format still with prefix and base58 encoding
+  }
+}
 
 describe('Issue and verify credential', () => {
 
@@ -40,26 +56,10 @@ describe('Issue and verify credential', () => {
 
   it('Issues a simple Antelope credential signed by one key', async () => {
     const did = "did:eosio:jungle:tonomytester";
-    const privateKey = PrivateKey.from("5KH76LoG9PhgjQqXCExJP5bHxShk5K6A7QHj723k2AdX5NYUHt7");
-    console.log(privateKey.toString());
 
-    const signer = async function (data: string | Uint8Array) {
-      console.log(data.length);
-      if (typeof data === 'string') {
-        // TODO is this base64 or base52/58???
-        // convert from base64 to hex
-        const buffer = Buffer.from(data, 'base64');
-        data = buffer.toString('hex');
-      }
-
-      const signature = await privateKey.signMessage(data);
-      return signature.toString();
-      // TODO signature in incorrect format still with prefix and base58 encoding
-    }
-
-    const keyIssuer: Issuer = {
+    const keyIssuer1: Issuer = {
       did: did + "#key-1",
-      signer,
+      signer: createSigner(PrivateKey.from("5KH76LoG9PhgjQqXCExJP5bHxShk5K6A7QHj723k2AdX5NYUHt7")),
       alg: "ES256K"
     }
 
@@ -79,6 +79,50 @@ describe('Issue and verify credential', () => {
     }
 
     const vcJwt = await createVerifiableCredentialJwt(vcPayload, keyIssuer);
+    const decodedJwt = decodeJWT(vcJwt);
+    console.log(decodedJwt);
+  })
+
+  it('Issues a simple Antelope credential signed by one key', async () => {
+
+    const did = "did:eosio:jungle:tonomytester";
+
+    const keyIssuer1: Issuer = {
+      did: did + "#key-1",
+      signer: createSigner(PrivateKey.from("5KH76LoG9PhgjQqXCExJP5bHxShk5K6A7QHj723k2AdX5NYUHt7")),
+      alg: "ES256K"
+    }
+    const keyIssuer2: Issuer = {
+      did: did + "#key-1",
+      signer: createSigner(PrivateKey.from("5KH76LoG9PhgjQqXCExJP5bHxShk5K6A7QHj723k2AdX5NYUHt7")),
+      alg: "ES256K"
+    }
+    const keyIssuer3: Issuer = {
+      did: did + "#key-1",
+      signer: createSigner(PrivateKey.from("5KH76LoG9PhgjQqXCExJP5bHxShk5K6A7QHj723k2AdX5NYUHt7")),
+      alg: "ES256K"
+    }
+
+    const vcPayload: JwtCredentialPayload = {
+      sub: did,
+      nbf: 1562950282,
+      vc: {
+        '@context': ['https://www.w3.org/2018/credentials/v1'],
+        type: ['VerifiableCredential'],
+        credentialSubject: {
+          degree: {
+            type: 'BachelorDegree',
+            name: 'Baccalauréat en musiques numériques'
+          }
+        }
+      }
+    }
+    const vcJwtWith1Signatures = await createVerifiableCredentialJwt(vcPayload, keyIssuer1);
+
+    const vcJwtWith2Signatures = await createVerifiableCredentialJwt(vcPayload, [keyIssuer1, keyIssuer2]);
+
+    const vcJwtWith3Signatures = await addSignatureToJwt(vcJwtWith2Signatures, keyIssuer3);
+
     const decodedJwt = decodeJWT(vcJwt);
     console.log(decodedJwt);
   })
