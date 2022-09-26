@@ -5,25 +5,19 @@ global.TextDecoder = TextDecoder as any;
 
 import { EthrDID } from 'ethr-did'
 // import EosioDID from 'eosio-did'
-import { PrivateKey } from '@greymass/eosio';
-import { decodeJWT } from 'did-jwt'
+import { PrivateKey, KeyType } from '@greymass/eosio';
+import { decodeJWT, ES256KSigner, ES256Signer } from 'did-jwt'
 import { Issuer } from 'did-jwt-vc'
 import { JwtCredentialPayload, createVerifiableCredentialJwt, addSignatureToJwt } from 'did-jwt-vc'
 
 function createSigner(privateKey: PrivateKey) {
-  return async (data: string | Uint8Array) => {
-    console.log(data.length);
-    if (typeof data === 'string') {
-      // TODO is this base64 or base52/58???
-      // convert from base64 to hex
-      const buffer = Buffer.from(data, 'base64');
-      data = buffer.toString('hex');
-    }
-
-    const signature = await privateKey.signMessage(data);
-    return signature.toString();
-    // TODO signature in incorrect format still with prefix and base58 encoding
+  if (privateKey.type === KeyType.K1) {
+    return ES256KSigner(privateKey.data.array, true);
   }
+  if (privateKey.type === KeyType.R1 || privateKey.type === KeyType.WA) {
+    return ES256Signer(privateKey.data.array);
+  }
+  throw new Error('Unsupported key type');
 }
 
 describe('Issue and verify credential', () => {
@@ -78,9 +72,9 @@ describe('Issue and verify credential', () => {
       }
     }
 
-    const vcJwt = await createVerifiableCredentialJwt(vcPayload, keyIssuer);
+    const vcJwt = await createVerifiableCredentialJwt(vcPayload, keyIssuer1);
     const decodedJwt = decodeJWT(vcJwt);
-    console.log(decodedJwt);
+    expect(decodedJwt).toBeDefined();
   })
 
   it('Issues a simple Antelope credential signed by one key', async () => {
@@ -94,12 +88,12 @@ describe('Issue and verify credential', () => {
     }
     const keyIssuer2: Issuer = {
       did: did + "#key-1",
-      signer: createSigner(PrivateKey.from("5KH76LoG9PhgjQqXCExJP5bHxShk5K6A7QHj723k2AdX5NYUHt7")),
+      signer: createSigner(PrivateKey.from("5HrTzxFoNA4MweauhgkWmrUZFc5kAZ8hGbgmqbT3z8gnd35EYy8")),
       alg: "ES256K"
     }
     const keyIssuer3: Issuer = {
       did: did + "#key-1",
-      signer: createSigner(PrivateKey.from("5KH76LoG9PhgjQqXCExJP5bHxShk5K6A7QHj723k2AdX5NYUHt7")),
+      signer: createSigner(PrivateKey.from("5JnSPB4mn9b52GVXMjnNxKp8x4bEGk6nsoVhwCPbEA3WoWnmEvf")),
       alg: "ES256K"
     }
 
@@ -118,12 +112,13 @@ describe('Issue and verify credential', () => {
       }
     }
     const vcJwtWith1Signatures = await createVerifiableCredentialJwt(vcPayload, keyIssuer1);
+    console.log("1 signature", vcJwtWith1Signatures);
 
     const vcJwtWith2Signatures = await createVerifiableCredentialJwt(vcPayload, [keyIssuer1, keyIssuer2]);
+    console.log("2 signatures", JSON.stringify(JSON.parse(vcJwtWith2Signatures), null, 2));
 
     const vcJwtWith3Signatures = await addSignatureToJwt(vcJwtWith2Signatures, keyIssuer3);
+    console.log("3 signatures", vcJwtWith3Signatures);
 
-    const decodedJwt = decodeJWT(vcJwt);
-    console.log(decodedJwt);
   })
 })
