@@ -105,7 +105,7 @@ describe('Issue and verify credential', () => {
     console.log("1 signature", vcJwtWith1Signatures);
 
     const vcJwtWith2Signatures = await createVerifiableCredentialJwt(vcPayload, [keyIssuer1, keyIssuer2]);
-    console.log("2 signatures", JSON.stringify(JSON.parse(vcJwtWith2Signatures), null, 2));
+    console.log("2 signatures", vcJwtWith2Signatures);
 
     // const vcJwtWith3Signatures = await addSignatureToJwt(vcJwtWith2Signatures, keyIssuer3);
     // console.log("3 signatures", vcJwtWith3Signatures);

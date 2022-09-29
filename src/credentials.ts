@@ -1,8 +1,7 @@
-import { CredentialUnsigned, CredentialSigned, CredentialOptions, JWT, OutputType } from './credentials.types';
-import { EosioOptions } from 'eosio-did';
-import { createVerifiableCredentialJwt, Issuer, JwtCredentialPayload } from 'did-jwt-vc';
+import { CredentialOptions, OutputType } from './credentials.types';
+import { createVerifiableCredentialJwt, VerifiableCredential, W3CCredential } from 'did-jwt-vc';
 import { PrivateKey, KeyType, PublicKey } from '@greymass/eosio';
-import { ES256KSigner, ES256Signer, Signer } from 'did-jwt'
+import { ES256KSigner, ES256Signer } from 'did-jwt'
 
 export function createSigner(privateKey: PrivateKey) {
     if (privateKey.type === KeyType.K1) {
@@ -24,32 +23,13 @@ export function keyToJwsAlgo(publicKey: PublicKey): string {
     throw new Error('Unsupported key type');
 }
 
-export async function issue(credential: CredentialUnsigned, credentialOptions: CredentialOptions, options?: EosioOptions): Promise<CredentialSigned | JWT> {
+export async function issue(credential: W3CCredential, credentialOptions: CredentialOptions): Promise<VerifiableCredential> {
     if (credentialOptions.outputType !== OutputType.JWT) {
         throw new Error('Only JWT output type is supported for now');
     }
 
-    let did = "did:eosio:";
-    if (options && options.chainId) {
-        did += options.chainId;
-    } else {
-        throw Error("No chainId provided");
-    }
-    did += credentialOptions.account.toString();
-    did += "#" + credentialOptions.permission.toString();
-
-    const vcPayload: JwtCredentialPayload = {
-        jti: credential.id,
-        vc: credential
-    }
-
-    if (!Array.isArray(credentialOptions.signer)) {
-        const issuer: Issuer = {
-            did: did + "-key-1",
-            signer: credentialOptions.signer.signer as Signer,
-            alg: keyToJwsAlgo(credentialOptions.signer.publicKey)
-        }
-        return await createVerifiableCredentialJwt(vcPayload, issuer);
+    if (!Array.isArray(credentialOptions.issuer)) {
+        return await createVerifiableCredentialJwt(credential, credentialOptions.issuer);
     } else {
         throw Error("Not implemented");
         // TODO
