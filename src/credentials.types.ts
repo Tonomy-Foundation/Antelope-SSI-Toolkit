@@ -32,10 +32,8 @@ namespace OutputType {
 }
 
 type CredentialOptions = {
-    account: string;
-    permission: string;
     issuer: Issuer | Issuer[];
-    outputType: OutputType;
+    outputType?: OutputType;
 }
 
 export { OutputType, CredentialOptions };
