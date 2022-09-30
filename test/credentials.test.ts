@@ -39,17 +39,13 @@ describe('Issue and verify credential', () => {
             did: `did:eosio:${chain}:${account}#${permission}`,
             signer: createSigner(privateKey)
         }
-        await issue(vc, {
+
+        const vcJwt = await issue(vc, {
             issuer,
             outputType: OutputType.JWT
         }) as JWT;
 
-        // const vcJwt = await issue(vc, {
-        //     issuer,
-        //     outputType: OutputType.JWT
-        // }) as JWT;
-
-        // console.log(decodeJWT(vcJwt));
+        console.log(decodeJWT(vcJwt));
     })
 
     it('Issues a credential with a three signatures', async () => {
@@ -89,6 +85,7 @@ describe('Issue and verify credential', () => {
             did: `did:eosio:${chain}:${account}#${permission}`,
             signer: createSigner(privateKey3)
         }
+
         const vcJwt = await issue(vc, {
             issuer: [issuer1, issuer2, issuer3],
             outputType: OutputType.JWT
