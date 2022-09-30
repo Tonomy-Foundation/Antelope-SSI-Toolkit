@@ -1,4 +1,4 @@
 import EosioDID from 'eosio-did';
-import Credentials from './credentials';
+import { issue } from './credentials';
 
-export { EosioDID, Credentials };
+export { EosioDID, issue };

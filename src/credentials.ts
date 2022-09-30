@@ -24,8 +24,7 @@ export function keyToJwsAlgo(publicKey: PublicKey): string {
 }
 
 export async function issue(credential: W3CCredential, credentialOptions: CredentialOptions): Promise<VerifiableCredential> {
-    if (!credentialOptions.outputType) { credentialOptions.outputType = OutputType.JWT; }
-    if (credentialOptions.outputType !== OutputType.JWT) {
+    if (credentialOptions.outputType && credentialOptions.outputType !== OutputType.JWT) {
         throw new Error('Only JWT output type is supported for now');
     }
 

@@ -39,15 +39,20 @@ describe('Issue and verify credential', () => {
             did: `did:eosio:${chain}:${account}#${permission}`,
             signer: createSigner(privateKey)
         }
-        const vcJwt = await issue(vc, {
+        await issue(vc, {
             issuer,
             outputType: OutputType.JWT
         }) as JWT;
 
-        console.log(decodeJWT(vcJwt));
+        // const vcJwt = await issue(vc, {
+        //     issuer,
+        //     outputType: OutputType.JWT
+        // }) as JWT;
+
+        // console.log(decodeJWT(vcJwt));
     })
 
-    it('Issues a credential with a two signatures', async () => {
+    it('Issues a credential with a three signatures', async () => {
         const now = new Date();
         const chain = "telos";
         const account = "university";
@@ -79,13 +84,17 @@ describe('Issue and verify credential', () => {
             did: `did:eosio:${chain}:${account}#${permission}`,
             signer: createSigner(privateKey2)
         }
+        const privateKey3 = createPrivateKey()
+        const issuer3 = {
+            did: `did:eosio:${chain}:${account}#${permission}`,
+            signer: createSigner(privateKey3)
+        }
         const vcJwt = await issue(vc, {
-            issuer: [issuer1, issuer2],
+            issuer: [issuer1, issuer2, issuer3],
             outputType: OutputType.JWT
         }) as JWT;
 
-        const decodedJwt = decodeJWT(vcJwt);
-        console.log(decodedJwt)
-        // console.log(decodeJWT(decodedJwt.payload as string))
+        const jwt = decodeJWT(vcJwt);
+        console.log("decodeJWT", JSON.stringify(jwt, null, 2))
     })
 })
