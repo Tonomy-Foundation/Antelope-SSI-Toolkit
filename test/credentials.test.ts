@@ -8,31 +8,31 @@ import { OutputType } from '../src/credentials.types';
 import { createPrivateKey } from './util/util';
 import { W3CCredential } from 'did-jwt-vc';
 import { decodeJWT } from 'did-jwt';
+import { JWTDecoded } from 'did-jwt/lib/JWT';
 import { JWT } from 'did-jwt-vc/lib/types';
 
 describe('Issue and verify credential', () => {
+    const now = new Date();
+    const chain = "telos";
+    const account = "university";
+    const permission = "active"
 
-    it('Issues a credential with a single signature', async () => {
-        const now = new Date();
-        const chain = "telos";
-        const account = "university";
-        const permission = "active"
-
-        const vc: W3CCredential = {
-            '@context': ['https://www.w3.org/2018/credentials/v1'],
-            id: "https://example.com/id/1234324",
-            type: ['VerifiableCredential'],
-            issuer: {
-                id: `did:eosio:${chain}:${account}`,
-            },
-            issuanceDate: now.toISOString(),
-            credentialSubject: {
-                degree: {
-                    type: 'BachelorDegree',
-                    name: 'Baccalauréat en musiques numériques'
-                }
+    const vc: W3CCredential = {
+        '@context': ['https://www.w3.org/2018/credentials/v1'],
+        id: "https://example.com/id/1234324",
+        type: ['VerifiableCredential'],
+        issuer: {
+            id: `did:eosio:${chain}:${account}`,
+        },
+        issuanceDate: now.toISOString(),
+        credentialSubject: {
+            degree: {
+                type: 'BachelorDegree',
+                name: 'Baccalauréat en musiques numériques'
             }
         }
+    }
+    it('Issues a credential with a single signature', async () => {
 
         const privateKey = createPrivateKey()
         const issuer = {
@@ -44,32 +44,24 @@ describe('Issue and verify credential', () => {
             issuer,
             outputType: OutputType.JWT
         }) as JWT;
+        const jwt: JWTDecoded = decodeJWT(vcJwt);
 
-        console.log(decodeJWT(vcJwt));
+        // check if the JWT object complies to the W3C standard https://www.w3.org/TR/vc-data-model/#jwt-encoding
+        expect(jwt.header.alg).toBeTruthy();
+        if (jwt.header.type) {
+            expect(jwt.header.type).toEqual("JWT");
+        }
+        expect(jwt.payload.nbf).toBeTruthy();
+        expect(jwt.payload.nbf).toBe(Math.floor(new Date(vc.issuanceDate).getTime() / 1000));
+        expect(jwt.payload.iss).toBeTruthy();
+        expect(jwt.payload.iss).toEqual(issuer.did);
+        if (vc.credentialSubject.id) {
+            expect(jwt.payload.sub).toBeTruthy();
+            expect(jwt.payload.sub).toEqual(vc.credentialSubject.id);
+        }
     })
 
     it('Issues a credential with a three signatures', async () => {
-        const now = new Date();
-        const chain = "telos";
-        const account = "university";
-        const permission = "active"
-
-        const vc: W3CCredential = {
-            '@context': ['https://www.w3.org/2018/credentials/v1'],
-            id: "https://example.com/id/1234324",
-            type: ['VerifiableCredential'],
-            issuer: {
-                id: `did:eosio:${chain}:${account}`,
-            },
-            issuanceDate: now.toISOString(),
-            credentialSubject: {
-                degree: {
-                    type: 'BachelorDegree',
-                    name: 'Baccalauréat en musiques numériques'
-                }
-            }
-        }
-
         const privateKey1 = createPrivateKey()
         const issuer1 = {
             did: `did:eosio:${chain}:${account}#${permission}`,
@@ -90,8 +82,23 @@ describe('Issue and verify credential', () => {
             issuer: [issuer1, issuer2, issuer3],
             outputType: OutputType.JWT
         }) as JWT;
+        console.log("jwt", vcJwt);
+        const jwt: JWTDecoded = decodeJWT(vcJwt);
 
-        const jwt = decodeJWT(vcJwt);
-        console.log("decodeJWT", JSON.stringify(jwt, null, 2))
+        // check if the JWT object complies to the W3C standard https://www.w3.org/TR/vc-data-model/#jwt-encoding
+        expect(jwt.header.alg).toBeTruthy();
+        if (jwt.header.type) {
+            expect(jwt.header.type).toEqual("JWT");
+        }
+
+        expect(jwt.payload.nbf).toBeTruthy();
+        expect(jwt.payload.nbf).toBe(Math.floor(new Date(vc.issuanceDate).getTime() / 1000));
+        expect(jwt.payload.iss).toBeTruthy();
+        expect(jwt.payload.iss).toEqual(issuer1.did);
+        if (vc.credentialSubject.id) {
+            expect(jwt.payload.sub).toBeTruthy();
+            expect(jwt.payload.sub).toEqual(vc.credentialSubject.id);
+        }
+
     })
 })

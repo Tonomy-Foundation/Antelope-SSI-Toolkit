@@ -57,6 +57,7 @@
     "dependencies": {
         "@greymass/eosio": "^0.6.4",
         "did-jwt-vc": "file:../did-jwt-vc",
-        "eosio-did": "^0.1.2"
+        "eosio-did": "^0.1.2",
+        "did-jwt": "file:../did-jwt"
     }
 }
