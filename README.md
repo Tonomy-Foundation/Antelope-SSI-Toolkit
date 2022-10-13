@@ -3,12 +3,15 @@
 A toolkit allowing Antelope accounts to send verifiable credentials and use DIDComm.
 
 # Usage
+
 ## Create a and verify a credential
 
 ```ts
+const privateKey = '5J...';
 const myId = "did:eosio:telos:mytelosaccount";
 const universityId = "did:eosio:telos:exampleuniversity";
 const universityVerificationMethod = "did:eosio:telos:exampleuniversity#active";
+
 
 const credential = {
   "@context": [
@@ -26,17 +29,17 @@ const credential = {
 };
 
 const credentials = new Credentials();
-const signedCredential = await credentials.issue(universityVerificationMethod, credential);
+const issuer = {
+  did: universityVerificationMethod,
+  signer: credentials.signer(privateKey)
+}
+const signedCredential = await credentials.issue(credential,{
+    issuer,
+    outputType: OutputType.JWT
+} );
 console.log(signedCredential);
-// credential {
-//   ...
-//   proof: {
-//     type: "EcdsaSecp256k1VerificationKey2019";
-//     created: "2010-01-01T19:23:24Z";
-//     proofPurpose: "assertionProf";
-//     verificationMethod: "did:eosio:telos:exampleuniversity#active";
-//     jws: "ewogICJhbGciOiAiUlMyNTYiLAogICJraWQiOiAiMTMzNzQ3MTQxMjU1IiwKICAiaWF0IjogMCwKICAiaXNzIjogIkM9R0IsIEw9TG9uZG9uLCBPVT1OdWFwYXkgQVBJLCBPPU51YXBheSwgQ049eWJvcXlheTkycSIsCiAgImI2NCI6IGZhbHNlLAogICJjcml0IjogWwogICAgImlhdCIsCiAgICAiaXNzIiwKICAgICJiNjQiCiAgXQp9..d_cZ46lwNiaFHAu_saC-Zz4rSzNbevWirO94EmBlbOwkB1L78vGbAnNjUsmFSU7t_HhL-cyMiQUDyRWswsEnlDljJsRi8s8ft48ipy2SMuZrjPpyYYMgink8nZZK7l-eFJcTiS9ZWezAAXF_IJFXSTO5ax9z6xty3zTNPNMV9W7aH8fEAvbUIiueOhH5xNHcsuqlOGygKdFz2rbjTGffoE_6zS4Dry-uX5mts2duLorobUimGsdlUcSM6P6vZEtcXaJCdjrT9tuFMh4CkX9nqk19Bq2z3i-SX4JCPvhD2r3ghRmX0gG08UcvyFVbrnVZJnpl4MU8V4Nr3-2M5URZOg"
-//   }
+//"ewogICJhbGciOiAiUlMyNTYiLAogICJraWQiOiAiMTMzNzQ3MTQxMjU1IiwKICAiaWF0IjogMCwKICAiaXNzIjogIkM9R0IsIEw9TG9uZG9uLCBPVT1OdWFwYXkgQVBJLCBPPU51YXBheSwgQ049eWJvcXlheTkycSIsCiAgImI2NCI6IGZhbHNlLAogICJjcml0IjogWwogICAgImlhdCIsCiAgICAiaXNzIiwKICAgICJiNjQiCiAgXQp9..d_cZ46lwNiaFHAu_saC-Zz4rSzNbevWirO94EmBlbOwkB1L78vGbAnNjUsmFSU7t_HhL-cyMiQUDyRWswsEnlDljJsRi8s8ft48ipy2SMuZrjPpyYYMgink8nZZK7l-eFJcTiS9ZWezAAXF_IJFXSTO5ax9z6xty3zTNPNMV9W7aH8fEAvbUIiueOhH5xNHcsuqlOGygKdFz2rbjTGffoE_6zS4Dry-uX5mts2duLorobUimGsdlUcSM6P6vZEtcXaJCdjrT9tuFMh4CkX9nqk19Bq2z3i-SX4JCPvhD2r3ghRmX0gG08UcvyFVbrnVZJnpl4MU8V4Nr3-2M5URZOg"
+//  
 
 const verifiedCreedential = await credentials.verify(signedCredential);
 console.log(verifiedCreedential);
@@ -44,6 +47,12 @@ console.log(verifiedCreedential);
 ```
 
 # Development and Testing
+
+## Install dependencies
+
+- clone ``https://github.com/Tonomy-Foundation/did-jwt.git`` into the parent directory of this repo and run ``npm install``
+
+- clone ``https://github.com/Tonomy-Foundation/did-jwt-vc.git`` into the parent directory of this repo and run ``npm install``
 
 ## Run
 
