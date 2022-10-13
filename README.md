@@ -31,7 +31,7 @@ const credential = {
 const credentials = new Credentials();
 const issuer = {
   did: universityVerificationMethod,
-  signer: credentials.siger(privateKey)
+  signer: credentials.signer(privateKey)
 }
 const signedCredential = await credentials.issue(credential,{
     issuer,
