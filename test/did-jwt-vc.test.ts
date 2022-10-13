@@ -67,7 +67,7 @@ describe('Issue and verify credential', () => {
     expect(decodedJwt).toBeDefined();
   })
 
-  it('Issues a simple Antelope credential signed by one key', async () => {
+  it('Issues a simple Antelope credential signed by multiple keys', async () => {
 
     const did = "did:eosio:jungle:tonomytester";
 
@@ -106,6 +106,8 @@ describe('Issue and verify credential', () => {
 
     const vcJwtWith2Signatures = await createVerifiableCredentialJwt(vcPayload, [keyIssuer1, keyIssuer2]);
     console.log("2 signatures", vcJwtWith2Signatures);
+    expect(vcJwtWith2Signatures).toBeTruthy();
+    expect(vcJwtWith1Signatures).toBeTruthy();
 
     // const vcJwtWith3Signatures = await addSignatureToJwt(vcJwtWith2Signatures, keyIssuer3);
     // console.log("3 signatures", vcJwtWith3Signatures);
