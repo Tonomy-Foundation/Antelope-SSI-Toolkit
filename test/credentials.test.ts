@@ -32,6 +32,7 @@ describe('Issue and verify credential', () => {
             }
         }
     }
+
     it('Issues a credential with a single signature', async () => {
 
         const privateKey = createPrivateKey()
@@ -59,6 +60,7 @@ describe('Issue and verify credential', () => {
             expect(jwt.payload.sub).toBeTruthy();
             expect(jwt.payload.sub).toEqual(vc.credentialSubject.id);
         }
+        expect(jwt.signature).toBeTruthy();
     })
 
     it('Issues a credential with a three signatures', async () => {
@@ -99,6 +101,7 @@ describe('Issue and verify credential', () => {
             expect(jwt.payload.sub).toBeTruthy();
             expect(jwt.payload.sub).toEqual(vc.credentialSubject.id);
         }
+        expect(jwt.signature).toBeTruthy();
 
     })
 })
