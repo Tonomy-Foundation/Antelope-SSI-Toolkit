@@ -6,9 +6,10 @@ global.TextDecoder = TextDecoder as any;
 import { EthrDID } from 'ethr-did'
 import { PrivateKey } from '@greymass/eosio';
 import { decodeJWT } from 'did-jwt'
-import { Issuer } from 'did-jwt-vc'
-import { JwtCredentialPayload, createVerifiableCredentialJwt } from 'did-jwt-vc'
+import { Issuer, JwtCredentialPayload, createVerifiableCredentialJwt, verifyCredential } from 'did-jwt-vc';
 import { createSigner } from '../src/credentials';
+import AntelopeDID from 'antelope-did';
+import fetch from 'node-fetch';
 
 describe('Issue and verify credential', () => {
 
@@ -39,12 +40,12 @@ describe('Issue and verify credential', () => {
   })
 
   it('Issues a simple Antelope credential signed by one key', async () => {
-    const did = "did:eosio:jungle:tonomytester";
+    const did = "did:eosio:eos:testnet:jungle:reball1block";
 
     const keyIssuer1: Issuer = {
-      did: did + "#key-1",
-      signer: createSigner(PrivateKey.from("5KH76LoG9PhgjQqXCExJP5bHxShk5K6A7QHj723k2AdX5NYUHt7")),
-      alg: "ES256K"
+      did: did + "#active-0",
+      signer: createSigner(PrivateKey.from("5KSKD681YRwQjwDkr8TLkUUU5adHy1CWGuLiow1DR5ToZF5oiUQ")),
+      alg: 'ES256K-R'
     }
 
     const vcPayload: JwtCredentialPayload = {
@@ -64,12 +65,18 @@ describe('Issue and verify credential', () => {
 
     const vcJwt = await createVerifiableCredentialJwt(vcPayload, keyIssuer1);
     const decodedJwt = decodeJWT(vcJwt);
+    console.log(vcJwt);
+    const antelopeDID = new AntelopeDID({ fetch })
+    const resolver = { resolve: antelopeDID.resolve.bind(antelopeDID)  };
+    console.log(JSON.stringify(await resolver.resolve(did , { accept: 'application/did+ld+json' })));
+    
+    expect(verifyCredential(vcJwt,resolver )).resolves.toBeTruthy();
     expect(decodedJwt).toBeDefined();
   })
 
   it('Issues a simple Antelope credential signed by multiple keys', async () => {
 
-    const did = "did:eosio:jungle:tonomytester";
+    const did = "did:eosio:eos:jungle:tonomytester";
 
     const keyIssuer1: Issuer = {
       did: did + "#key-1",

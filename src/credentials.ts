@@ -1,5 +1,5 @@
 import { CredentialOptions, OutputType } from './credentials.types';
-import { createVerifiableCredentialJwt, VerifiableCredential, W3CCredential } from 'did-jwt-vc';
+import { createVerifiableCredentialJwt, VerifiableCredential, verifyCredential, W3CCredential } from 'did-jwt-vc';
 import { PrivateKey, KeyType, PublicKey } from '@greymass/eosio';
 import { ES256KSigner, ES256Signer } from 'did-jwt'
 
@@ -41,6 +41,7 @@ export async function issue(credential: W3CCredential, credentialOptions: Creden
 //     throw Error("Not implemented");
 // }
 
-// export async function verify(credential: CredentialSigned, options?: EosioOptions): Promise<boolean> {
-//     throw Error("Not implemented");
-// }
+export async function verify(verifiableCredential: string, options?: CredentialOptions): Promise<boolean> {
+    // return false
+    return !! await verifyCredential(verifiableCredential, {} as any, options);
+}
