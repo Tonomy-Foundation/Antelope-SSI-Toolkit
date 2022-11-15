@@ -2,6 +2,7 @@ import { CredentialOptions, OutputType } from './credentials.types';
 import { createVerifiableCredentialJwt, VerifiableCredential, verifyCredential, W3CCredential } from 'did-jwt-vc';
 import { PrivateKey, KeyType, PublicKey } from '@greymass/eosio';
 import { ES256KSigner, ES256Signer } from 'did-jwt'
+import { JWT } from 'did-jwt-vc/lib/types';
 
 export function createSigner(privateKey: PrivateKey) {
     if (privateKey.type === KeyType.K1) {
@@ -29,7 +30,7 @@ export function keyToJwsAlgo(publicKey: PublicKey): string {
  * @param credentialOptions  the options to issue the credential with 
  * @returns the issued credential signed by one or more issuers
  */
-export async function issue(credential: W3CCredential, credentialOptions: CredentialOptions): Promise<VerifiableCredential> {
+export async function issue(credential: W3CCredential, credentialOptions: CredentialOptions): Promise<JWT> {
     if (credentialOptions.outputType && credentialOptions.outputType !== OutputType.JWT) {
         throw new Error('Only JWT output type is supported for now');
     }
@@ -37,11 +38,12 @@ export async function issue(credential: W3CCredential, credentialOptions: Creden
     return await createVerifiableCredentialJwt(credential, credentialOptions.issuer);
 }
 
-// export async function addSignature(credential: CredentialSigned, credentialOptions: CredentialOptions, options?: EosioOptions): Promise<CredentialSigned> {
+// TODO asynchroneously add signatures to the credential
+// export async function addSignature(credential: VerifiableCredential, credentialOptions: CredentialOptions, options?: EosioOptions): Promise<CredentialSigned> {
 //     throw Error("Not implemented");
 // }
 
-export async function verify(verifiableCredential: string, options?: CredentialOptions): Promise<boolean> {
+export async function verify(verifiableCredential: JWT, options?: CredentialOptions): Promise<boolean> {
     // return false
     return !! await verifyCredential(verifiableCredential, {} as any, options);
 }
