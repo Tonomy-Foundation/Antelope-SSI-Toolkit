@@ -20,7 +20,7 @@ describe('Issue and verify credential', () => {
     const vc: W3CCredential = {
         '@context': ['https://www.w3.org/2018/credentials/v1'],
         id: "https://example.com/id/1234324",
-        type: ['VerifiableCredential'],
+        type: ['ConditionalProof2022'],
         issuer: {
             id: `did:eosio:${chain}:${account}`,
         },
