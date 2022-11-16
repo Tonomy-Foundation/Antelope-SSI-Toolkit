@@ -12,12 +12,11 @@ import {
   verifyCredential,
 } from 'did-jwt-vc';
 import { createSigner } from '../src/credentials';
-import AntelopeDID, {
+import {
   createDIDDocument,
   antelopeChainRegistry,
   checkDID,
 } from 'antelope-did';
-import fetch from 'node-fetch';
 import { parse } from 'did-resolver';
 
 describe('Issue and verify credential', () => {
@@ -37,49 +36,60 @@ describe('Issue and verify credential', () => {
     'EOS7EEmiZSRfqMmVse9bycExAAZ1ixUioPavkGTbotiGLryhACufQ',
     'EOS7y23bQGv367BFcv4eKrFdq6BTZsTh4gbDziNdRiffv1tq6DnaP',
   ];
-  const privatekeys = [
+  const privateKeys = [
     '5JAJ7BfYKdRnrSQCsdcBqrCcBVQQSuQ77fuRAJ5fcbQ3UDhuLLZ',
     '5JcKy5rAp4rTnE9za1CNm5xBG4DnJ2T29cYpz87kRVRdQqv1K8x',
     '5JibpxxNpkqdejc38KD9xZF3fKHtTUonKCAYiZbwNPsgoKbw6FQ',
   ];
-  const Resolver = {
-    resolve: async (did: string) => {
-      const parsed = parse(did);
-      if (!parsed) throw new Error('could not parse did');
-      const methodId = checkDID(parsed, antelopeChainRegistry);
-      if (!methodId) throw new Error('invalid did');
-      
-      const account = {
-        permissions: [{
-          perm_name: "active",
-          parent: "owner",
-          required_auth: {
-            threshold: 2,
-            keys: publicKeys.map(key => {
-              return { key, weight: 1 };
-            }),
-            accounts: []
-          }
-        }]
-      }
-      const didDoc = createDIDDocument(methodId, parsed.did, account);
-      console.log('didDoc', JSON.stringify(didDoc, null, 2))
-      
-      return {
-        didResolutionMetadata: {},
-        didDocument: didDoc,
-        didDocumentMetadata: {},
-      };
-    },
-  };
 
-  it('Issues a simple Antelope credential signed by one key', async () => {
+  type AntelopePermission = {
+    threshold: number;
+    keys: {
+      key: string;
+      weight: number;
+    }[]
+    accounts: {
+      permission: {
+        permission: string;
+        actor: string;
+      }
+      weight: number
+    }[]
+  }
+  function createResolver(required_auth: AntelopePermission) {
+    return {
+      resolve: async (did: string) => {
+        const parsed = parse(did);
+        if (!parsed) throw new Error('could not parse did');
+        const methodId = checkDID(parsed, antelopeChainRegistry);
+        if (!methodId) throw new Error('invalid did');
+        
+        const account = {
+          permissions: [{
+            perm_name: "active",
+            parent: "owner",
+            required_auth
+          }]
+        }
+        const didDoc = createDIDDocument(methodId, parsed.did, account);
+        console.log('didDoc', JSON.stringify(didDoc, null, 2))
+        
+        return {
+          didResolutionMetadata: {},
+          didDocument: didDoc,
+          didDocumentMetadata: {},
+        };
+      },
+    }
+  }
+
+  it('Issues and verifies an Antelope credential signed by one key', async () => {
     const did = 'did:antelope:eos:testnet:jungle:reball1block';
 
     const keyIssuer1: Issuer = {
       did: did + '#active',
       signer: createSigner(
-        PrivateKey.from('5KSKD681YRwQjwDkr8TLkUUU5adHy1CWGuLiow1DR5ToZF5oiUQ')
+        PrivateKey.from(privateKeys[0])
       ),
       alg: 'ES256K-R',
     };
@@ -101,11 +111,19 @@ describe('Issue and verify credential', () => {
 
     const vcJwt = await createVerifiableCredentialJwt(vcPayload, keyIssuer1);
     const decodedJwt = decodeJWT(vcJwt);
-    const antelopeDID = new AntelopeDID({ fetch });
-    const resolver = { resolve: antelopeDID.resolve.bind(antelopeDID) };
-
-    await expect(verifyCredential(vcJwt, resolver)).resolves.toBeTruthy();
     await expect(decodedJwt).toBeDefined();
+
+    const resolver = createResolver({
+      threshold: 1,
+      keys: [{
+        key: publicKeys[0],
+        weight: 1
+      }],
+      accounts: []
+    })
+    const verifiedCredential = await verifyCredential(vcJwt, resolver);
+
+    await expect(verifiedCredential.verified).toBeTruthy();
   });
 
   it('Issues and verify a simple Antelope credential with 2 of 3 signature check', async () => {
@@ -113,12 +131,12 @@ describe('Issue and verify credential', () => {
 
     const keyIssuer1: Issuer = {
       did: did + '#active',
-      signer: createSigner(PrivateKey.from(privatekeys[0])),
+      signer: createSigner(PrivateKey.from(privateKeys[0])),
       alg: 'ES256K-R',
     };
     const keyIssuer2: Issuer = {
       did: did + '#active',
-      signer: createSigner(PrivateKey.from(privatekeys[1])),
+      signer: createSigner(PrivateKey.from(privateKeys[1])),
       alg: 'ES256K-R',
     };
 
@@ -143,7 +161,13 @@ describe('Issue and verify credential', () => {
     );
     expect(typeof vcJwtWith2Signatures === 'string').toBeTruthy()
 
-    const verifiedVc = await verifyCredential(vcJwtWith2Signatures, Resolver);
+    const resolver = createResolver({
+      threshold: 2,
+      keys: publicKeys.map((key) => { return { key, weight: 1}}),
+      accounts: []
+    })
+    
+    const verifiedVc = await verifyCredential(vcJwtWith2Signatures, resolver);
     expect(verifiedVc.verified).toBeTruthy();
   });
 });
