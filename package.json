@@ -56,7 +56,6 @@
     },
     "dependencies": {
         "@greymass/eosio": "^0.6.4",
-
         "antelope-did": "file:../antelope-did",
         "did-jwt": "file:../did-jwt",
         "did-jwt-vc": "file:../did-jwt-vc",
