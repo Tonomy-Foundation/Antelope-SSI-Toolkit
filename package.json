@@ -59,7 +59,6 @@
         "antelope-did": "file:../antelope-did",
         "did-jwt": "file:../did-jwt",
         "did-jwt-vc": "file:../did-jwt-vc",
-        "eosio-did": "^0.1.2",
-        "node-fetch": "^2.6.7"
+        "did-resolver": "file:../did-resolver"
     }
 }
