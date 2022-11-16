@@ -2,6 +2,7 @@
 import { TextEncoder, TextDecoder } from 'util';
 global.TextEncoder = TextEncoder;
 global.TextDecoder = TextDecoder as any;
+
 import { PrivateKey } from '@greymass/eosio';
 import { decodeJWT } from 'did-jwt';
 import {
@@ -15,7 +16,6 @@ import AntelopeDID, {
   createDIDDocument,
   antelopeChainRegistry,
   checkDID,
-  fetchAccount,
 } from 'antelope-did';
 import fetch from 'node-fetch';
 import { parse } from 'did-resolver';
@@ -48,12 +48,23 @@ describe('Issue and verify credential', () => {
       if (!parsed) throw new Error('could not parse did');
       const methodId = checkDID(parsed, antelopeChainRegistry);
       if (!methodId) throw new Error('invalid did');
-      const account = await fetchAccount(methodId, did, parsed, { fetch });
-      account.permissions[0].required_auth.threshold = 2;
-      account.permissions[0].required_auth.keys = publicKeys.map(key => {
-        return { key, weight: 1 };
-      });
-      const didDoc = createDIDDocument(methodId, did, account);
+      
+      const account = {
+        permissions: [{
+          perm_name: "active",
+          parent: "owner",
+          required_auth: {
+            threshold: 2,
+            keys: publicKeys.map(key => {
+              return { key, weight: 1 };
+            }),
+            accounts: []
+          }
+        }]
+      }
+      const didDoc = createDIDDocument(methodId, parsed.did, account);
+      console.log('didDoc', JSON.stringify(didDoc, null, 2))
+      
       return {
         didResolutionMetadata: {},
         didDocument: didDoc,
@@ -61,11 +72,12 @@ describe('Issue and verify credential', () => {
       };
     },
   };
+
   it('Issues a simple Antelope credential signed by one key', async () => {
-    const did = 'did:eosio:eos:testnet:jungle:reball1block';
+    const did = 'did:antelope:eos:testnet:jungle:reball1block';
 
     const keyIssuer1: Issuer = {
-      did: did + '#active-0',
+      did: did + '#active',
       signer: createSigner(
         PrivateKey.from('5KSKD681YRwQjwDkr8TLkUUU5adHy1CWGuLiow1DR5ToZF5oiUQ')
       ),
@@ -96,8 +108,8 @@ describe('Issue and verify credential', () => {
     await expect(decodedJwt).toBeDefined();
   });
 
-  it('Issues a simple Antelope credential signed by multiple keys', async () => {
-    const did = 'did:eosio:eos:testnet:jungle:reball1block';
+  it('Issues and verify a simple Antelope credential with 2 of 3 signature check', async () => {
+    const did = 'did:antelope:eos:testnet:jungle:reball1block';
 
     const keyIssuer1: Issuer = {
       did: did + '#active',
@@ -109,11 +121,6 @@ describe('Issue and verify credential', () => {
       signer: createSigner(PrivateKey.from(privatekeys[1])),
       alg: 'ES256K-R',
     };
-    // const keyIssuer3: Issuer = {
-    //   did: did + "#key-1",
-    //   signer: createSigner(PrivateKey.from("5JnSPB4mn9b52GVXMjnNxKp8x4bEGk6nsoVhwCPbEA3WoWnmEvf")),
-    //   alg: "ES256K"
-    // }
 
     const vcPayload: JwtCredentialPayload = {
       sub: did,
@@ -129,23 +136,14 @@ describe('Issue and verify credential', () => {
         },
       },
     };
-    const vcJwtWith1Signatures = await createVerifiableCredentialJwt(
-      vcPayload,
-      keyIssuer1
-    );
 
     const vcJwtWith2Signatures = await createVerifiableCredentialJwt(
       vcPayload,
       [keyIssuer1, keyIssuer2]
     );
+    expect(typeof vcJwtWith2Signatures === 'string').toBeTruthy()
 
-    await expect(
-      verifyCredential(vcJwtWith2Signatures, Resolver)
-    ).resolves.toBeTruthy();
-    expect(vcJwtWith2Signatures).toBeTruthy();
-    expect(vcJwtWith1Signatures).toBeTruthy();
-
-    // const vcJwtWith3Signatures = await addSignatureToJwt(vcJwtWith2Signatures, keyIssuer3);
-    // console.log("3 signatures", vcJwtWith3Signatures);
+    const verifiedVc = await verifyCredential(vcJwtWith2Signatures, Resolver);
+    expect(verifiedVc.verified).toBeTruthy();
   });
 });

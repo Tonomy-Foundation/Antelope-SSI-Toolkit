@@ -1,5 +1,5 @@
 import { CredentialOptions, OutputType } from './credentials.types';
-import { createVerifiableCredentialJwt, VerifiableCredential, verifyCredential, W3CCredential } from 'did-jwt-vc';
+import { createVerifiableCredentialJwt, verifyCredential, W3CCredential } from 'did-jwt-vc';
 import { PrivateKey, KeyType, PublicKey } from '@greymass/eosio';
 import { ES256KSigner, ES256Signer } from 'did-jwt'
 import { JWT } from 'did-jwt-vc/lib/types';
@@ -35,6 +35,7 @@ export async function issue(credential: W3CCredential, credentialOptions: Creden
         throw new Error('Only JWT output type is supported for now');
     }
 
+    // TODO return the full version as well?
     return await createVerifiableCredentialJwt(credential, credentialOptions.issuer);
 }
 
