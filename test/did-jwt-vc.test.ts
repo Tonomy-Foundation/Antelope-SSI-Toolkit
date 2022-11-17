@@ -78,11 +78,11 @@ describe('Issue and verify credential', () => {
       alg: 'ES256K-R',
     };
 
-    const vcJwtWith2Signatures = await createVerifiableCredentialJwt(
+    const vcJwtWithDelegatedSignature = await createVerifiableCredentialJwt(
       vcPayload,
       [keyIssuer1]
     );
-    expect(typeof vcJwtWith2Signatures === 'string').toBeTruthy()
+    expect(typeof vcJwtWithDelegatedSignature === 'string').toBeTruthy()
 
     const resolver = createResolver([{
       threshold: 1,
@@ -102,10 +102,8 @@ describe('Issue and verify credential', () => {
       }],
       accounts: []
     }])
-    console.log('check')
-    console.log(JSON.stringify(((await resolver.resolve('did:antelope:eos:testnet:jungle:reball1block')) as any).didDocument.verificationMethod[0], null, 2));
     
-    // const verifiedVc = await verifyCredential(vcJwtWith2Signatures, resolver);
-    // expect(verifiedVc.verified).toBeTruthy();
+    const verifiedVc = await verifyCredential(vcJwtWithDelegatedSignature, resolver);
+    expect(verifiedVc.verified).toBeTruthy();
   });
 });
