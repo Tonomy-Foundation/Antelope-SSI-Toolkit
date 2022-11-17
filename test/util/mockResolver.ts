@@ -6,21 +6,21 @@ import {
 import { parse, DIDDocument } from 'did-resolver';
 
 type AntelopePermission = {
-threshold: number;
-keys: {
-    key: string;
-    weight: number;
-}[]
-accounts: {
-    permission: {
-    permission: string;
-    actor: string;
-    }
-    weight: number
-}[]
+    threshold: number;
+    keys: {
+        key: string;
+        weight: number;
+    }[]
+    accounts: {
+        permission: {
+        permission: string;
+        actor: string;
+        }
+        weight: number
+    }[]
 }
 
-export function createResolver(required_auth: AntelopePermission, required_auth2?: AntelopePermission) {
+export function createResolver(required_auth: AntelopePermission | AntelopePermission []) {
     return {
         resolve: async (did: string) => {
             const parsed = parse(did);
@@ -29,27 +29,26 @@ export function createResolver(required_auth: AntelopePermission, required_auth2
             if (!methodId) throw new Error('invalid did');
             
             let didDoc: DIDDocument;
-            console.log('parsed', parsed);
-            if (parsed.id === 'jackacc' && required_auth2) {
-                const account = {
-                    permissions: [{
-                    perm_name: "active",
-                    parent: "owner",
-                    required_auth
-                    }]
-                }
-                didDoc = createDIDDocument(methodId, parsed.did, account);    
+            const id = parsed.id.split(':');
+            const accountName = id[id.length-1];
+            console.log(accountName)
+
+            let auth: AntelopePermission[]
+            if (!Array.isArray(required_auth)) {
+                auth = [required_auth]
             } else {
-                const account = {
-                    permissions: [{
-                    perm_name: "active",
-                    parent: "owner",
-                    required_auth
-                    }]
-                }
-                didDoc = createDIDDocument(methodId, parsed.did, account);    
+                auth = required_auth
             }
-            console.log('didDoc', JSON.stringify(didDoc, null, 2))
+            const mockAccountResponse = {
+                    permissions: auth.map((permission, index) => {
+                        return {
+                        perm_name: "active" + (index === 0 ? '' : '-' + index),
+                        parent: "owner",
+                        required_auth: permission
+                    }
+                })
+            }
+            didDoc = createDIDDocument(methodId, parsed.did, mockAccountResponse);
             
             return {
                 didResolutionMetadata: {},
