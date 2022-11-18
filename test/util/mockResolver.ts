@@ -29,7 +29,6 @@ export function createResolver(required_auth: AntelopePermission | AntelopePermi
             if (!methodId) throw new Error('invalid did');
             
             let didDoc: DIDDocument;
-            const id = parsed.id.split(':');
             
             let auth: AntelopePermission[]
             if (!Array.isArray(required_auth)) {
