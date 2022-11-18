@@ -30,9 +30,7 @@ export function createResolver(required_auth: AntelopePermission | AntelopePermi
             
             let didDoc: DIDDocument;
             const id = parsed.id.split(':');
-            const accountName = id[id.length-1];
-            console.log(accountName)
-
+            
             let auth: AntelopePermission[]
             if (!Array.isArray(required_auth)) {
                 auth = [required_auth]
