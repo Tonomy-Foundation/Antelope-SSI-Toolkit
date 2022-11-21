@@ -18,6 +18,7 @@ import { did, vcPayload } from './util/vc';
 describe('Issue and verify credential', () => {
 
   it('Issues and verifies an Antelope credential signed by one key', async () => {
+    console.log('1 signature check');
     const keyIssuer1: Issuer = {
       did: did + '#active',
       signer: createSigner(
@@ -44,6 +45,7 @@ describe('Issue and verify credential', () => {
   });
 
   it('Issues and verify a simple Antelope credential with 2 of 3 signature check', async () => {
+    console.log('2 of 3 signature check');
     const keyIssuer1: Issuer = {
       did: did + '#active',
       signer: createSigner(PrivateKey.from(privateKeys[0])),
@@ -72,6 +74,8 @@ describe('Issue and verify credential', () => {
   });
 
   it('Issues and verify a credential with a delegated signature check', async () => {
+    const h = '###############################################################\n'
+    console.log(`${h}${h}${h}\ndelegated signature check\n${h}${h}${h}`);
     const keyIssuer1: Issuer = {
       did: did + '#active',
       signer: createSigner(PrivateKey.from(privateKeys[0])),
@@ -89,7 +93,7 @@ describe('Issue and verify credential', () => {
       keys: [],
       accounts: [{
         permission: {
-          permission: 'active-1',
+          permission: 'permission1',
           actor: 'reball1block',
         },
         weight: 1

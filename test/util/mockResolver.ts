@@ -39,7 +39,7 @@ export function createResolver(required_auth: AntelopePermission | AntelopePermi
             const mockAccountResponse = {
                     permissions: auth.map((permission, index) => {
                         return {
-                        perm_name: "active" + (index === 0 ? '' : '-' + index),
+                        perm_name: "permission" + index,
                         parent: "owner",
                         required_auth: permission
                     }
