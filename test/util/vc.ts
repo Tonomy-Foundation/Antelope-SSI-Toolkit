@@ -1,5 +1,7 @@
 import { JwtCredentialPayload } from "did-jwt-vc";
 
+const CONDITIONAL_PROOF_2022 = 'ConditionalProof2022'
+
 export const did = 'did:antelope:eos:testnet:jungle:reball1block';
 
 export const vcPayload: JwtCredentialPayload = {
@@ -7,6 +9,7 @@ export const vcPayload: JwtCredentialPayload = {
     nbf: 1562950282,
     vc: {
       '@context': ['https://www.w3.org/2018/credentials/v1'],
+      type: [CONDITIONAL_PROOF_2022],
       credentialSubject: {
         degree: {
           type: 'BachelorDegree',
