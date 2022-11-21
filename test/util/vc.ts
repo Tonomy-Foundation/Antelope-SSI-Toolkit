@@ -7,7 +7,6 @@ export const vcPayload: JwtCredentialPayload = {
     nbf: 1562950282,
     vc: {
       '@context': ['https://www.w3.org/2018/credentials/v1'],
-      type: ['ConditionalProof2022'],
       credentialSubject: {
         degree: {
           type: 'BachelorDegree',
