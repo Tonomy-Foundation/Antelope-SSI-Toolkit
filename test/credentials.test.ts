@@ -89,8 +89,8 @@ describe('Issue and verify credential', () => {
 
         // check if the JWT object complies to the W3C standard https://www.w3.org/TR/vc-data-model/#jwt-encoding
         expect(jwt.header.alg).toBeTruthy();
-        if (jwt.header.type) {
-            expect(jwt.header.type).toEqual("JWT");
+        if (jwt.header.cty) {
+            expect(jwt.header.cty).toEqual("JWT");
         }
 
         expect(jwt.payload.nbf).toBeTruthy();
