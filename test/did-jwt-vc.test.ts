@@ -106,4 +106,70 @@ describe('Issue and verify credential', () => {
     const verifiedVc = await verifyCredential(vcJwtWithDelegatedSignature, resolver);
     expect(verifiedVc.verified).toBeTruthy();
   });
+
+  it('Issues and verify a credential with a 3 threshold and 2 keys and 2 delegated signature check', async () => {
+    const keyIssuer1: Issuer = {
+      did: did + '#permission0',
+      signer: createSigner(PrivateKey.from(privateKeys[0])),
+      alg: 'ES256K-R',
+    };
+    const keyIssuer2: Issuer = {
+      did: did + '#permission0',
+      signer: createSigner(PrivateKey.from(privateKeys[1])),
+      alg: 'ES256K-R',
+    };
+    const keyIssuer3: Issuer = {
+      did: did + '#permission0',
+      signer: createSigner(PrivateKey.from(privateKeys[2])),
+      alg: 'ES256K-R',
+    };
+
+    const vcJwtWithDelegatedSignature = await createVerifiableCredentialJwt(
+      vcPayload,
+      [keyIssuer1, keyIssuer2, keyIssuer3]
+    );
+    expect(typeof vcJwtWithDelegatedSignature === 'string').toBeTruthy()
+
+    const resolver = createResolver([{
+      threshold: 3,
+      keys: [{
+        key: publicKeys[0],
+        weight: 1
+      }, {
+        key: publicKeys[1],
+        weight: 1
+      }],
+      accounts: [{
+        permission: {
+          permission: 'permission1',
+          actor: 'reball1block',
+        },
+        weight: 1
+      }, {
+        permission: {
+          permission: 'permission2',
+          actor: 'reball1block',
+        },
+        weight: 1
+      }]
+    }, {
+      threshold: 1,
+      keys: [{
+        key: publicKeys[2],
+        weight: 1
+      }],
+      accounts: []
+    }, {
+      threshold: 1,
+      keys: [{
+        key: publicKeys[3],
+        weight: 1
+      }],
+      accounts: []
+    }])
+    
+    const verifiedVc = await verifyCredential(vcJwtWithDelegatedSignature, resolver);
+    expect(verifiedVc.verified).toBeTruthy();
+  });
+
 });
