@@ -30,16 +30,16 @@
         "singleQuote": true,
         "trailingComma": "es5"
     },
-    "name": "eosio-ssi-toolkit",
+    "name": "antelope-ssi-toolkit",
     "author": "Jack Tanner",
-    "module": "dist/eosio-ssi-toolkit.esm.js",
+    "module": "dist/antelope-ssi-toolkit.esm.js",
     "size-limit": [
         {
-            "path": "dist/eosio-ssi-toolkit.cjs.production.min.js",
+            "path": "dist/antelope-ssi-toolkit.cjs.production.min.js",
             "limit": "10 KB"
         },
         {
-            "path": "dist/eosio-ssi-toolkit.esm.js",
+            "path": "dist/antelope-ssi-toolkit.esm.js",
             "limit": "10 KB"
         }
     ],
@@ -56,11 +56,9 @@
     },
     "dependencies": {
         "@greymass/eosio": "^0.6.4",
-
         "antelope-did": "file:../antelope-did",
         "did-jwt": "file:../did-jwt",
         "did-jwt-vc": "file:../did-jwt-vc",
-        "eosio-did": "^0.1.2",
-        "node-fetch": "^2.6.7"
+        "did-resolver": "file:../did-resolver"
     }
 }
