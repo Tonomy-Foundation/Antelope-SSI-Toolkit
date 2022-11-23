@@ -98,11 +98,7 @@ describe('Issue and verify credential', () => {
       accounts: []
     })
 
-    try {
-      await verifyCredential(vcJwt, resolver);
-    } catch (e) {
-      expect(e.message.startsWith(JWT_ERROR.INVALID_SIGNATURE)).toBeTruthy()
-    }
+    await expect(() => verifyCredential(vcJwt, resolver)).rejects.toThrowError(JWT_ERROR.INVALID_SIGNATURE)
   });
 
 
@@ -155,11 +151,7 @@ describe('Issue and verify credential', () => {
       accounts: []
     })
 
-    try {
-      await verifyCredential(vcJwtWith2Signatures, resolver);
-    } catch (e) {
-      expect(e.message.startsWith(JWT_ERROR.INVALID_SIGNATURE)).toBeTruthy()
-    }
+    await expect(() => verifyCredential(vcJwtWith2Signatures, resolver)).rejects.toThrowError(JWT_ERROR.INVALID_SIGNATURE)
   });
 
   it('5. Issues and verify a credential with a delegated signature check', async () => {
@@ -232,11 +224,7 @@ describe('Issue and verify credential', () => {
       accounts: []
     }])
 
-    try {
-      await verifyCredential(vcJwtWithDelegatedSignature, resolver);
-    } catch (e) {
-      expect(e.message.startsWith(JWT_ERROR.INVALID_SIGNATURE)).toBeTruthy()
-    }
+    await expect(() => verifyCredential(vcJwtWithDelegatedSignature, resolver)).rejects.toThrowError(JWT_ERROR.INVALID_SIGNATURE)
   });
 
   it('7. Issues and verify a credential with a 3 threshold and 2 keys and 2 delegated signature check', async () => {
@@ -367,11 +355,7 @@ describe('Issue and verify credential', () => {
       accounts: []
     }])
 
-    try {
-      await verifyCredential(vcJwtWithDelegatedSignature, resolver);
-    } catch (e) {
-      expect(e.message.startsWith(JWT_ERROR.INVALID_SIGNATURE)).toBeTruthy()
-    }
+    await expect(() => verifyCredential(vcJwtWithDelegatedSignature, resolver)).rejects.toThrowError(JWT_ERROR.INVALID_SIGNATURE)
   });
 
   it('9. Issues and fails to verify a credential with a 3 threshold and 2 keys and 2 delegated signature check, with incorrect delegation', async () => {
@@ -436,11 +420,7 @@ describe('Issue and verify credential', () => {
       accounts: []
     }])
 
-    try {
-      await verifyCredential(vcJwtWithDelegatedSignature, resolver);
-    } catch (e) {
-      expect(e.message.startsWith(JWT_ERROR.INVALID_SIGNATURE)).toBeTruthy()
-    }
+    await expect(() => verifyCredential(vcJwtWithDelegatedSignature, resolver)).rejects.toThrowError(JWT_ERROR.INVALID_SIGNATURE)
   });
 
 });
