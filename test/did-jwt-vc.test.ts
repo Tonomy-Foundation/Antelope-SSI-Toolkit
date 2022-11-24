@@ -68,11 +68,7 @@ describe('Issue and verify credential', () => {
       accounts: []
     })
 
-    try {
-      await verifyCredential(vcJwt, resolver);
-    } catch (e) {
-      expect(e.message.startsWith(JWT_ERROR.INVALID_SIGNATURE)).toBeTruthy()
-    }
+    await expect(() => verifyCredential(vcJwt, resolver)).rejects.toThrowError(JWT_ERROR.INVALID_SIGNATURE)
   });
 
   it('2a. Issues and fails to verify when the issuer DID URL does not match the authenticator', async () => {
