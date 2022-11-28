@@ -97,7 +97,6 @@ describe('Issue and verify credential', () => {
     await expect(() => verifyCredential(vcJwt, resolver)).rejects.toThrowError(JWT_ERROR.INVALID_SIGNATURE)
   });
 
-
   it('3. Issues and verify a simple Antelope credential with 2 of 3 signature check', async () => {
     console.log(`${h}${h}${h}\nTest 3\n\n${h}${h}${h}`)
     const keyIssuer1: Issuer = {
@@ -128,7 +127,7 @@ describe('Issue and verify credential', () => {
   });
 
   it('4. Issues and fails to verify a simple Antelope credential with 2 of 3 signature check with only 1 signature', async () => {
-    console.log(`${h}${h}${h}\nTest 2\n\n${h}${h}${h}`)
+    console.log(`${h}${h}${h}\nTest 4\n\n${h}${h}${h}`)
     const keyIssuer1: Issuer = {
       did: did + '#permission0',
       signer: createSigner(PrivateKey.from(privateKeys[0])),
@@ -293,7 +292,7 @@ describe('Issue and verify credential', () => {
     console.log(`${h}${h}${h}\nTest 8\n\n${h}${h}${h}`)
     const keyIssuer1: Issuer = {
       did: did + '#permission0',
-      signer: createSigner(PrivateKey.from(privateKeys[3])),
+      signer: createSigner(PrivateKey.from(privateKeys[5])),
       alg: 'ES256K-R',
     };
     const keyIssuer2: Issuer = {
@@ -368,7 +367,7 @@ describe('Issue and verify credential', () => {
     };
     const keyIssuer3: Issuer = {
       did: did + '#permission0',
-      signer: createSigner(PrivateKey.from(privateKeys[3])),
+      signer: createSigner(PrivateKey.from(privateKeys[5])),
       alg: 'ES256K-R',
     };
 
