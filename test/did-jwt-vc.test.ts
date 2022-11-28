@@ -292,7 +292,7 @@ describe('Issue and verify credential', () => {
     console.log(`${h}${h}${h}\nTest 8\n\n${h}${h}${h}`)
     const keyIssuer1: Issuer = {
       did: did + '#permission0',
-      signer: createSigner(PrivateKey.from(privateKeys[5])),
+      signer: createSigner(PrivateKey.from(privateKeys[4])),
       alg: 'ES256K-R',
     };
     const keyIssuer2: Issuer = {
@@ -367,7 +367,7 @@ describe('Issue and verify credential', () => {
     };
     const keyIssuer3: Issuer = {
       did: did + '#permission0',
-      signer: createSigner(PrivateKey.from(privateKeys[5])),
+      signer: createSigner(PrivateKey.from(privateKeys[4])),
       alg: 'ES256K-R',
     };
 
