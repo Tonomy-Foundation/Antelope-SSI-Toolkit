@@ -36,7 +36,7 @@ export async function issue(credential: W3CCredential, credentialOptions: Creden
     }
 
     // TODO return the full version as well?
-    return await createVerifiableCredentialJwt(credential, credentialOptions.issuer);
+    return await createVerifiableCredentialJwt(credential, credentialOptions.issuer, { canonicalize: true });
 }
 
 // TODO asynchroneously add signatures to the credential
