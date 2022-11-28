@@ -1,23 +1,21 @@
-// @ts-nocheck
-
 // Fix for https://stackoverflow.com/questions/68468203/why-am-i-getting-textencoder-is-not-defined-in-jest
 import { TextEncoder, TextDecoder } from 'util';
 global.TextEncoder = TextEncoder;
 global.TextDecoder = TextDecoder as any;
 
 import { PrivateKey } from '@greymass/eosio';
-import { createJWT, decodeJWT, JWTOptions, JWTPayload, JWT_ERROR, Signer } from 'did-jwt';
+import { createJWT, decodeJWT, JWTHeader, JWTOptions, JWTPayload, JWT_ERROR, Signer } from 'did-jwt';
 import {
   Issuer,
   createVerifiableCredentialJwt,
   verifyCredential,
-  validateJwtCredentialPayload,
 } from 'did-jwt-vc';
 import { createSigner } from '../src/credentials';
 import { createResolver } from './util/mockResolver'
 import { publicKeys, privateKeys } from './util/keys';
 import { did, vcPayload } from './util/vc';
 
+// @ts-ignore
 async function mockCreateMultisignatureJWT(
   payload: Partial<JWTPayload>,
   { expiresIn, canonicalize }: Partial<JWTOptions>,
@@ -47,8 +45,7 @@ async function mockCreateMultisignatureJWT(
 
     // Mock the 2nd signature is tampered with here
     if (i === 1) {
-      const [header, payload, signature] = jwt.split('.')
-      // const tamperedSignature = signature.slice(8, -1) + 'tampered'
+      const [header, payload] = jwt.split('.')
       const tamperedSignature = '7F5jTioKhny2fifxCI6ZAWl3XrFZ9bMhP9WYlOfkU-wNxO1jfQuyl9zZyQXqo7FfIgYi7CYoAU_mUsRAuGb4cQA'
       jwt = `${header}.${payload}.${tamperedSignature}`
     }
@@ -59,6 +56,7 @@ async function mockCreateMultisignatureJWT(
 }
 
 jest.mock('did-jwt', () => ({
+  // @ts-ignore
   ...jest.requireActual('did-jwt'),
   createMultisignatureJWT: jest.fn(mockCreateMultisignatureJWT),
 }));
