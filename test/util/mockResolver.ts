@@ -2,8 +2,8 @@ import {
   createDIDDocument,
   antelopeChainRegistry,
   checkDID,
-} from 'antelope-did';
-import { parse, DIDDocument } from 'did-resolver';
+} from '@tonomy/antelope-did';
+import { parse, DIDDocument } from '@tonomy/did-resolver';
 
 type AntelopePermission = {
     threshold: number;

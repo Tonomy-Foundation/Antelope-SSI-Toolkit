@@ -4,12 +4,12 @@ global.TextEncoder = TextEncoder;
 global.TextDecoder = TextDecoder as any;
 
 import { PrivateKey } from '@greymass/eosio';
-import { decodeJWT, JWT_ERROR } from 'did-jwt';
+import { decodeJWT, JWT_ERROR } from '@tonomy/did-jwt';
 import {
   Issuer,
   createVerifiableCredentialJwt,
   verifyCredential,
-} from 'did-jwt-vc';
+} from '@tonomy/did-jwt-vc';
 import { createSigner } from '../src/credentials';
 import { createResolver } from './util/mockResolver'
 import { publicKeys, privateKeys } from './util/keys';

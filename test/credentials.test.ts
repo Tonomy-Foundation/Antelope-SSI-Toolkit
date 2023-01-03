@@ -6,10 +6,10 @@ global.TextDecoder = TextDecoder as any;
 import { createSigner, issue } from '../src/credentials';
 import { OutputType } from '../src/credentials.types';
 import { createPrivateKey } from './util/util';
-import { W3CCredential } from 'did-jwt-vc';
-import { decodeJWT } from 'did-jwt';
-import { JWTDecoded } from 'did-jwt/lib/JWT';
-import { JWT } from 'did-jwt-vc/lib/types';
+import { W3CCredential } from '@tonomy/did-jwt-vc';
+import { decodeJWT } from '@tonomy/did-jwt';
+import { JWTDecoded } from '@tonomy/did-jwt/lib/JWT';
+import { JWT } from '@tonomy/did-jwt-vc/lib/types';
 
 describe('Issue and verify credential', () => {
     const now = new Date();

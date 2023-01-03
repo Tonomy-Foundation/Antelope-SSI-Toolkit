@@ -1,4 +1,4 @@
-import { Issuer } from 'did-jwt-vc';
+import { Issuer } from '@tonomy/did-jwt-vc';
 
 enum OutputType {
     JWT = "JWT",

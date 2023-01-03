@@ -1,8 +1,8 @@
 import { CredentialOptions, OutputType } from './credentials.types';
-import { createVerifiableCredentialJwt, verifyCredential, W3CCredential } from 'did-jwt-vc';
+import { createVerifiableCredentialJwt, verifyCredential, W3CCredential } from '@tonomy/did-jwt-vc';
 import { PrivateKey, KeyType, PublicKey } from '@greymass/eosio';
-import { ES256KSigner, ES256Signer } from 'did-jwt'
-import { JWT } from 'did-jwt-vc/lib/types';
+import { ES256KSigner, ES256Signer } from '@tonomy/did-jwt'
+import { JWT } from '@tonomy/did-jwt-vc/lib/types';
 
 export function createSigner(privateKey: PrivateKey) {
     if (privateKey.type === KeyType.K1) {

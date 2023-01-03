@@ -1,8 +1,13 @@
 {
+    "name": "antelope-ssi-toolkit",
+    "author": "Jack Tanner",
     "version": "0.1.0",
     "license": "MIT",
     "main": "dist/index.js",
     "typings": "dist/index.d.ts",
+    "publishConfig": {
+        "access": "public"
+    },
     "files": [
         "dist",
         "src"
@@ -24,14 +29,16 @@
             "pre-commit": "tsdx lint"
         }
     },
+    "contributors": [
+        "Jack Tanner <jack@tonomy.foundation>",
+        "Rebal Alhaqash <rebal@tonomy.foundation>"
+    ],
     "prettier": {
         "printWidth": 80,
         "semi": true,
         "singleQuote": true,
         "trailingComma": "es5"
     },
-    "name": "antelope-ssi-toolkit",
-    "author": "Jack Tanner",
     "module": "dist/antelope-ssi-toolkit.esm.js",
     "size-limit": [
         {
@@ -56,9 +63,9 @@
     },
     "dependencies": {
         "@greymass/eosio": "^0.6.4",
-        "antelope-did": "file:../antelope-did",
-        "did-jwt": "file:../did-jwt",
-        "did-jwt-vc": "file:../did-jwt-vc",
-        "did-resolver": "file:../did-resolver"
+        "@tonomy/antelope-did": "^0.1.3",
+        "@tonomy/did-jwt": "^6.9.0",
+        "@tonomy/did-jwt-vc": "^3.1.2",
+        "@tonomy/did-resolver": "^4.0.4"
     }
 }

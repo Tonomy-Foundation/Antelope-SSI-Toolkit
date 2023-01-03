@@ -4,12 +4,12 @@ global.TextEncoder = TextEncoder;
 global.TextDecoder = TextDecoder as any;
 
 import { PrivateKey } from '@greymass/eosio';
-import { createJWT, decodeJWT, JWTHeader, JWTOptions, JWTPayload, JWT_ERROR, Signer } from 'did-jwt';
+import { createJWT, decodeJWT, JWTHeader, JWTOptions, JWTPayload, JWT_ERROR, Signer } from '@tonomy/did-jwt';
 import {
   Issuer,
   createVerifiableCredentialJwt,
   verifyCredential,
-} from 'did-jwt-vc';
+} from '@tonomy/did-jwt-vc';
 import { createSigner } from '../src/credentials';
 import { createResolver } from './util/mockResolver'
 import { publicKeys, privateKeys } from './util/keys';
@@ -55,9 +55,9 @@ async function mockCreateMultisignatureJWT(
   return jwt
 }
 
-jest.mock('did-jwt', () => ({
+jest.mock('@tonomy/did-jwt', () => ({
   // @ts-ignore
-  ...jest.requireActual('did-jwt'),
+  ...jest.requireActual('@tonomy/did-jwt'),
   createMultisignatureJWT: jest.fn(mockCreateMultisignatureJWT),
 }));
 
