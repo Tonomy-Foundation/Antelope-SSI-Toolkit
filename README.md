@@ -47,7 +47,7 @@ const vcJwt = await issue(vc, {
 const isVerified = await verify(vcJwt);
 ```
 
-## Develop
+## Development
 
 TSDX scaffolds your new library inside `/src`.
 

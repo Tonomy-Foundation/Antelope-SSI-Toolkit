@@ -33,7 +33,7 @@ describe('Issue and verify credential', () => {
         }
     }
 
-    it('Issues and verifies a credential with a single signature', async () => {
+    it('Issues a credential with a single signature', async () => {
 
         const privateKey = createPrivateKey()
         const issuer = {
@@ -61,6 +61,21 @@ describe('Issue and verify credential', () => {
             expect(jwt.payload.sub).toEqual(vc.credentialSubject.id);
         }
         expect(jwt.signature).toBeTruthy();
+
+        const verified = await verify(vcJwt);
+        expect(verified).toBeTruthy();
+    })
+
+    it('Verifies an issued credential with a single signature', async () => {
+        const privateKey = createPrivateKey()
+        const issuer = {
+            did: `did:antelope:${chain}:${account}#permission0`,
+            signer: createSigner(privateKey)
+        }
+
+        const vcJwt = await issue(vc, {
+            issuer
+        }) as JWT;
 
         const verified = await verify(vcJwt);
         expect(verified).toBeTruthy();

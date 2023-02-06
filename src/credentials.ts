@@ -1,8 +1,10 @@
 import { CredentialOptions, OutputType } from './credentials.types';
 import { createVerifiableCredentialJwt, verifyCredential, W3CCredential } from '@tonomy/did-jwt-vc';
+import { getResolver } from '@tonomy/antelope-did-resolver';
 import { PrivateKey, KeyType } from '@greymass/eosio';
 import { ES256KSigner, ES256Signer, Signer } from '@tonomy/did-jwt'
 import { JWT } from '@tonomy/did-jwt-vc/lib/types';
+import { Resolver } from '@tonomy/did-resolver'
 
 /* Creates a signer from a private key that can be used to sign a JWT
  *
@@ -48,5 +50,6 @@ export async function issue(credential: W3CCredential, credentialOptions: Creden
  * @returns true if the signature matches the issuer
  */
 export async function verify(verifiableCredential: JWT, options?: CredentialOptions): Promise<boolean> {
-    return !! await verifyCredential(verifiableCredential, {} as any, options);
+    const resolver = new Resolver(getResolver());
+    return !! await verifyCredential(verifiableCredential, resolver, options);
 }
