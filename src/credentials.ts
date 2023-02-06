@@ -4,6 +4,10 @@ import { PrivateKey, KeyType, PublicKey } from '@greymass/eosio';
 import { ES256KSigner, ES256Signer } from '@tonomy/did-jwt'
 import { JWT } from '@tonomy/did-jwt-vc/lib/types';
 
+/* Creates a signer from a private key that can be used to sign a JWT
+ *
+ * @param privateKey the private key to use to sign the JWT
+ */
 export function createSigner(privateKey: PrivateKey) {
     if (privateKey.type === KeyType.K1) {
         return ES256KSigner(privateKey.data.array, true);
@@ -26,16 +30,17 @@ export function keyToJwsAlgo(publicKey: PublicKey): string {
 
 /**
  * Issues a verifiable credential
- * @param credential the verfiable credential to issue
+ * 
+ * @param credential the verifiable credential to issue
  * @param credentialOptions  the options to issue the credential with 
- * @returns the issued credential signed by one or more issuers
+ * @returns the issued jwt credential signed by one or more issuers
  */
 export async function issue(credential: W3CCredential, credentialOptions: CredentialOptions): Promise<JWT> {
     if (credentialOptions.outputType && credentialOptions.outputType !== OutputType.JWT) {
         throw new Error('Only JWT output type is supported for now');
     }
 
-    // TODO return the full version as well?
+    // TODO return the full W3C version as well?
     return await createVerifiableCredentialJwt(credential, credentialOptions.issuer, { canonicalize: true });
 }
 
@@ -44,7 +49,13 @@ export async function issue(credential: W3CCredential, credentialOptions: Creden
 //     throw Error("Not implemented");
 // }
 
+/**
+ * Verifies a credential signed by a did:antelope or did:eosio issuer
+ * 
+ * @param credential the signed jwt verifiable credential to verify
+ * @param credentialOptions  the options to verify the credential with 
+ * @returns true if the signature matches the issuer
+ */
 export async function verify(verifiableCredential: JWT, options?: CredentialOptions): Promise<boolean> {
-    // return false
     return !! await verifyCredential(verifiableCredential, {} as any, options);
 }

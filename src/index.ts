@@ -1,4 +1,4 @@
 
-import { issue , verify} from './credentials';
+import { issue, verify, createSigner } from './credentials';
 
-export { issue , verify  };
+export { issue, verify, createSigner };
