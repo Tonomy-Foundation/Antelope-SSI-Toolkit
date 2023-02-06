@@ -1,29 +1,20 @@
 import { CredentialOptions, OutputType } from './credentials.types';
 import { createVerifiableCredentialJwt, verifyCredential, W3CCredential } from '@tonomy/did-jwt-vc';
-import { PrivateKey, KeyType, PublicKey } from '@greymass/eosio';
-import { ES256KSigner, ES256Signer } from '@tonomy/did-jwt'
+import { PrivateKey, KeyType } from '@greymass/eosio';
+import { ES256KSigner, ES256Signer, Signer } from '@tonomy/did-jwt'
 import { JWT } from '@tonomy/did-jwt-vc/lib/types';
 
 /* Creates a signer from a private key that can be used to sign a JWT
  *
  * @param privateKey the private key to use to sign the JWT
+ * @returns a signer (function) that can be used to sign a JWT
  */
-export function createSigner(privateKey: PrivateKey) {
+export function createSigner(privateKey: PrivateKey): Signer {
     if (privateKey.type === KeyType.K1) {
         return ES256KSigner(privateKey.data.array, true);
     }
     if (privateKey.type === KeyType.R1 || privateKey.type === KeyType.WA) {
         return ES256Signer(privateKey.data.array);
-    }
-    throw new Error('Unsupported key type');
-}
-
-export function keyToJwsAlgo(publicKey: PublicKey): string {
-    if (publicKey.type === KeyType.K1) {
-        return 'ES256K';
-    }
-    if (publicKey.type === KeyType.R1) {
-        return 'ES256R';
     }
     throw new Error('Unsupported key type');
 }
