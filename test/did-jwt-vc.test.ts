@@ -17,9 +17,9 @@ import { did, vcPayload } from './util/vc';
 
 describe('Issue and verify credential', () => {
 
-  const h = '####################################\n'
+  // const h = '####################################\n'
   it('1. Issues and verifies an Antelope credential signed by one key', async () => {
-    console.log(`${h}${h}${h}\nTest 1\n\n${h}${h}${h}`)
+    // console.log(`${h}${h}${h}\nTest 1\n\n${h}${h}${h}`)
     const keyIssuer1: Issuer = {
       did: did + '#permission0',
       signer: createSigner(
@@ -46,7 +46,7 @@ describe('Issue and verify credential', () => {
   });
 
   it('2. Issues and fails to verify an Antelope credential signed by the wrong key', async () => {
-    console.log(`${h}${h}${h}\nTest 2\n\n${h}${h}${h}`)
+    // console.log(`${h}${h}${h}\nTest 2\n\n${h}${h}${h}`)
     const keyIssuer1: Issuer = {
       did: did + '#permission0',
       signer: createSigner(
@@ -97,7 +97,7 @@ describe('Issue and verify credential', () => {
   });
 
   it('3. Issues and verify a simple Antelope credential with 2 of 3 signature check', async () => {
-    console.log(`${h}${h}${h}\nTest 3\n\n${h}${h}${h}`)
+    // console.log(`${h}${h}${h}\nTest 3\n\n${h}${h}${h}`)
     const keyIssuer1: Issuer = {
       did: did + '#permission0',
       signer: createSigner(PrivateKey.from(privateKeys[0])),
@@ -126,7 +126,7 @@ describe('Issue and verify credential', () => {
   });
 
   it('4. Issues and fails to verify a simple Antelope credential with 2 of 3 signature check with only 1 signature', async () => {
-    console.log(`${h}${h}${h}\nTest 4\n\n${h}${h}${h}`)
+    // console.log(`${h}${h}${h}\nTest 4\n\n${h}${h}${h}`)
     const keyIssuer1: Issuer = {
       did: did + '#permission0',
       signer: createSigner(PrivateKey.from(privateKeys[0])),
@@ -149,7 +149,7 @@ describe('Issue and verify credential', () => {
   });
 
   it('5. Issues and verify a credential with a delegated signature check', async () => {
-    console.log(`${h}${h}${h}\nTest 5\n\n${h}${h}${h}`)
+    // console.log(`${h}${h}${h}\nTest 5\n\n${h}${h}${h}`)
     const keyIssuer1: Issuer = {
       did: did + '#permission0',
       signer: createSigner(PrivateKey.from(privateKeys[0])),
@@ -186,7 +186,7 @@ describe('Issue and verify credential', () => {
   });
 
   it('6. Issues and fails to verify a credential with the wrong delegated signature check', async () => {
-    console.log(`${h}${h}${h}\nTest 6\n\n${h}${h}${h}`)
+    // console.log(`${h}${h}${h}\nTest 6\n\n${h}${h}${h}`)
     const keyIssuer1: Issuer = {
       did: did + '#permission0',
       signer: createSigner(PrivateKey.from(privateKeys[1])),
@@ -222,7 +222,7 @@ describe('Issue and verify credential', () => {
   });
 
   it('7. Issues and verify a credential with a 3 threshold and 2 keys and 2 delegated signature check', async () => {
-    console.log(`${h}${h}${h}\nTest 7\n\n${h}${h}${h}`)
+    // console.log(`${h}${h}${h}\nTest 7\n\n${h}${h}${h}`)
     const keyIssuer1: Issuer = {
       did: did + '#permission0',
       signer: createSigner(PrivateKey.from(privateKeys[0])),
@@ -288,7 +288,7 @@ describe('Issue and verify credential', () => {
   });
 
   it('8. Issues and fails to verify a credential with a 3 threshold and 2 keys and 2 delegated signature check, with incorrect key', async () => {
-    console.log(`${h}${h}${h}\nTest 8\n\n${h}${h}${h}`)
+    // console.log(`${h}${h}${h}\nTest 8\n\n${h}${h}${h}`)
     const keyIssuer1: Issuer = {
       did: did + '#permission0',
       signer: createSigner(PrivateKey.from(privateKeys[4])),
@@ -353,7 +353,7 @@ describe('Issue and verify credential', () => {
   });
 
   it('9. Issues and fails to verify a credential with a 3 threshold and 2 keys and 2 delegated signature check, with incorrect delegation', async () => {
-    console.log(`${h}${h}${h}\nTest 9\n\n${h}${h}${h}`)
+    // console.log(`${h}${h}${h}\nTest 9\n\n${h}${h}${h}`)
     const keyIssuer1: Issuer = {
       did: did + '#permission0',
       signer: createSigner(PrivateKey.from(privateKeys[0])),
@@ -375,7 +375,7 @@ describe('Issue and verify credential', () => {
       [keyIssuer1, keyIssuer2, keyIssuer3]
     );
     expect(typeof vcJwtWithDelegatedSignature === 'string').toBeTruthy()
-    console.log(vcJwtWithDelegatedSignature)
+    // console.log(vcJwtWithDelegatedSignature)
     const resolver = createResolver([{
       threshold: 3,
       keys: [{

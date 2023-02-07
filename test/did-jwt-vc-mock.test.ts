@@ -63,9 +63,9 @@ jest.mock('@tonomy/did-jwt', () => ({
 
 describe('Issue and verify credential', () => {
 
-  const h = '####################################\n'
+  // const h = '####################################\n'
   it('7a. Issues a credential with 2 valid signature and 1 tampered signature, which correctly decodes but fails validation', async () => {
-    console.log(`${h}${h}${h}\nTest 7a\n\n${h}${h}${h}`)
+    // console.log(`${h}${h}${h}\nTest 7a\n\n${h}${h}${h}`)
     const keyIssuer1: Issuer = {
       did: did + '#permission0',
       signer: createSigner(PrivateKey.from(privateKeys[0])),
