@@ -1,10 +1,17 @@
 import { CredentialOptions, OutputType } from './credentials.types';
 import { createVerifiableCredentialJwt, verifyCredential, W3CCredential } from '@tonomy/did-jwt-vc';
-import { PrivateKey, KeyType, PublicKey } from '@greymass/eosio';
-import { ES256KSigner, ES256Signer } from '@tonomy/did-jwt'
+import { getResolver } from '@tonomy/antelope-did-resolver';
+import { PrivateKey, KeyType } from '@greymass/eosio';
+import { ES256KSigner, ES256Signer, Signer } from '@tonomy/did-jwt'
 import { JWT } from '@tonomy/did-jwt-vc/lib/types';
+import { Resolver } from '@tonomy/did-resolver'
 
-export function createSigner(privateKey: PrivateKey) {
+/* Creates a signer from a private key that can be used to sign a JWT
+ *
+ * @param privateKey the private key to use to sign the JWT
+ * @returns a signer (function) that can be used to sign a JWT
+ */
+export function createSigner(privateKey: PrivateKey): Signer {
     if (privateKey.type === KeyType.K1) {
         return ES256KSigner(privateKey.data.array, true);
     }
@@ -14,37 +21,32 @@ export function createSigner(privateKey: PrivateKey) {
     throw new Error('Unsupported key type');
 }
 
-export function keyToJwsAlgo(publicKey: PublicKey): string {
-    if (publicKey.type === KeyType.K1) {
-        return 'ES256K';
-    }
-    if (publicKey.type === KeyType.R1) {
-        return 'ES256R';
-    }
-    throw new Error('Unsupported key type');
-}
-
 /**
  * Issues a verifiable credential
- * @param credential the verfiable credential to issue
+ * 
+ * @param credential the verifiable credential to issue
  * @param credentialOptions  the options to issue the credential with 
- * @returns the issued credential signed by one or more issuers
+ * @returns the issued jwt credential signed by one or more issuers
  */
 export async function issue(credential: W3CCredential, credentialOptions: CredentialOptions): Promise<JWT> {
     if (credentialOptions.outputType && credentialOptions.outputType !== OutputType.JWT) {
         throw new Error('Only JWT output type is supported for now');
     }
 
-    // TODO return the full version as well?
+    // TODO return the full W3C version as well?
     return await createVerifiableCredentialJwt(credential, credentialOptions.issuer, { canonicalize: true });
 }
 
-// TODO asynchroneously add signatures to the credential
-// export async function addSignature(credential: VerifiableCredential, credentialOptions: CredentialOptions, options?: EosioOptions): Promise<CredentialSigned> {
-//     throw Error("Not implemented");
-// }
-
+/**
+ * Verifies a credential signed by a did:antelope or did:eosio issuer
+ * For a more complete verification result, use the verifyCredential function from @tonomy/did-jwt-vc
+ * 
+ * @param credential the signed jwt verifiable credential to verify
+ * @param credentialOptions  the options to verify the credential with 
+ * 
+ * @returns true if the signature matches the issuer
+ */
 export async function verify(verifiableCredential: JWT, options?: CredentialOptions): Promise<boolean> {
-    // return false
-    return !! await verifyCredential(verifiableCredential, {} as any, options);
+    const resolver = new Resolver(getResolver());
+    return !! await verifyCredential(verifiableCredential, resolver, options);
 }

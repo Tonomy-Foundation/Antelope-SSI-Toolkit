@@ -3,26 +3,27 @@ import { TextEncoder, TextDecoder } from 'util'
 global.TextEncoder = TextEncoder;
 global.TextDecoder = TextDecoder as any;
 
-import { createSigner, issue } from '../src/credentials';
+import { createSigner, issue } from '../src/index';
 import { OutputType } from '../src/credentials.types';
 import { createPrivateKey } from './util/util';
 import { W3CCredential } from '@tonomy/did-jwt-vc';
 import { decodeJWT } from '@tonomy/did-jwt';
 import { JWTDecoded } from '@tonomy/did-jwt/lib/JWT';
-import { JWT } from '@tonomy/did-jwt-vc/lib/types';
+import { Issuer, JWT } from '@tonomy/did-jwt-vc/lib/types';
+import { createMockVerify } from './util/mockResolver';
 
 describe('Issue and verify credential', () => {
     const now = new Date();
     const chain = "telos";
     const account = "university";
-    const permission = "active"
+    const permission = "permission0"
 
     const vc: W3CCredential = {
         '@context': ['https://www.w3.org/2018/credentials/v1'],
         id: "https://example.com/id/1234324",
         type: ['VerifiableCredential'],
         issuer: {
-            id: `did:eosio:${chain}:${account}`,
+            id: `did:antelope:${chain}:${account}`,
         },
         issuanceDate: now.toISOString(),
         credentialSubject: {
@@ -37,7 +38,7 @@ describe('Issue and verify credential', () => {
 
         const privateKey = createPrivateKey()
         const issuer = {
-            did: `did:eosio:${chain}:${account}#${permission}`,
+            did: `did:antelope:${chain}:${account}#${permission}`,
             signer: createSigner(privateKey)
         }
 
@@ -63,20 +64,44 @@ describe('Issue and verify credential', () => {
         expect(jwt.signature).toBeTruthy();
     })
 
+    it('Verifies an issued credential with a single signature', async () => {
+        const privateKey = createPrivateKey()
+        const issuer: Issuer = {
+            did: `did:antelope:${chain}:${account}#${permission}`,
+            signer: createSigner(privateKey),
+            alg: 'ES256K-R',
+        }
+
+        const vcJwt = await issue(vc, {
+            issuer
+        }) as JWT;
+
+        const verify = createMockVerify({
+            threshold: 1,
+            keys: [{
+                key: privateKey.toPublic().toString(),
+                weight: 1
+            }],
+            accounts: []
+        })
+        const verified = await verify(vcJwt);
+        expect(verified).toBeTruthy();
+    })
+
     it('Issues a credential with a three signatures', async () => {
         const privateKey1 = createPrivateKey()
         const issuer1 = {
-            did: `did:eosio:${chain}:${account}#${permission}`,
+            did: `did:antelope:${chain}:${account}#${permission}`,
             signer: createSigner(privateKey1)
         }
         const privateKey2 = createPrivateKey()
         const issuer2 = {
-            did: `did:eosio:${chain}:${account}#${permission}`,
+            did: `did:antelope:${chain}:${account}#${permission}`,
             signer: createSigner(privateKey2)
         }
         const privateKey3 = createPrivateKey()
         const issuer3 = {
-            did: `did:eosio:${chain}:${account}#${permission}`,
+            did: `did:antelope:${chain}:${account}#${permission}`,
             signer: createSigner(privateKey3)
         }
 
@@ -84,7 +109,7 @@ describe('Issue and verify credential', () => {
             issuer: [issuer1, issuer2, issuer3],
             outputType: OutputType.JWT
         }) as JWT;
-        console.log("jwt", vcJwt);
+
         const jwt: JWTDecoded = decodeJWT(vcJwt);
 
         // check if the JWT object complies to the W3C standard https://www.w3.org/TR/vc-data-model/#jwt-encoding

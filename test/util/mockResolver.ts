@@ -1,8 +1,9 @@
 import {
-  createDIDDocument,
-  antelopeChainRegistry,
-  checkDID,
+    createDIDDocument,
+    antelopeChainRegistry,
+    checkDID,
 } from '@tonomy/antelope-did';
+import { verifyCredential } from '@tonomy/did-jwt-vc';
 import { parse, DIDDocument } from '@tonomy/did-resolver';
 
 type AntelopePermission = {
@@ -13,23 +14,23 @@ type AntelopePermission = {
     }[]
     accounts: {
         permission: {
-        permission: string;
-        actor: string;
+            permission: string;
+            actor: string;
         }
         weight: number
     }[]
 }
 
-export function createResolver(required_auth: AntelopePermission | AntelopePermission []) {
+export function createResolver(required_auth: AntelopePermission | AntelopePermission[]) {
     return {
         resolve: async (did: string) => {
             const parsed = parse(did);
             if (!parsed) throw new Error('could not parse did');
             const methodId = checkDID(parsed, antelopeChainRegistry);
             if (!methodId) throw new Error('invalid did');
-            
+
             let didDoc: DIDDocument;
-            
+
             let auth: AntelopePermission[]
             if (!Array.isArray(required_auth)) {
                 auth = [required_auth]
@@ -37,8 +38,8 @@ export function createResolver(required_auth: AntelopePermission | AntelopePermi
                 auth = required_auth
             }
             const mockAccountResponse = {
-                    permissions: auth.map((permission, index) => {
-                        return {
+                permissions: auth.map((permission, index) => {
+                    return {
                         perm_name: "permission" + index,
                         parent: "owner",
                         required_auth: permission
@@ -46,7 +47,7 @@ export function createResolver(required_auth: AntelopePermission | AntelopePermi
                 })
             }
             didDoc = createDIDDocument(methodId, parsed.did, mockAccountResponse);
-            
+
             return {
                 didResolutionMetadata: {},
                 didDocument: didDoc,
@@ -54,4 +55,12 @@ export function createResolver(required_auth: AntelopePermission | AntelopePermi
             };
         },
     }
+}
+
+export function createMockVerify(required_auth: AntelopePermission | AntelopePermission[]) {
+    // @ts-ignore
+    return async function mockVerify(verifiableCredential, options?): Promise<boolean> {
+        return !! await verifyCredential(verifiableCredential, createResolver(required_auth), options);
+    }
+
 }
