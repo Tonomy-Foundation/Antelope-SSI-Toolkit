@@ -30,14 +30,15 @@ const vc = {
     credentialSubject: {
         degree: {
             type: 'BachelorDegree',
-            name: 'Baccalauréat en musiques numériques'
+            name: 'Bachelor of Music'
         }
     }
 }
 
 const issuer = {
     did: "did:antelope:telos:university#active",
-    signer: createSigner(PrivateKey.from("PVT_K1_2bfGi9rYsXQSXXTvJbDAPhHLQUojjaNLomdm3cEJ1XTzMqUt3V"))
+    signer: createSigner(PrivateKey.from("PVT_K1_2bfGi9rYsXQSXXTvJbDAPhHLQUojjaNLomdm3cEJ1XTzMqUt3V")),
+    alg: 'ES256K-R'
 }
 
 const vcJwt = await issue(vc, {

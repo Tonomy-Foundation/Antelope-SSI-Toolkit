@@ -37,16 +37,13 @@ export async function issue(credential: W3CCredential, credentialOptions: Creden
     return await createVerifiableCredentialJwt(credential, credentialOptions.issuer, { canonicalize: true });
 }
 
-// TODO asynchroneously add signatures to the credential
-// export async function addSignature(credential: VerifiableCredential, credentialOptions: CredentialOptions, options?: EosioOptions): Promise<CredentialSigned> {
-//     throw Error("Not implemented");
-// }
-
 /**
  * Verifies a credential signed by a did:antelope or did:eosio issuer
+ * For a more complete verification result, use the verifyCredential function from @tonomy/did-jwt-vc
  * 
  * @param credential the signed jwt verifiable credential to verify
  * @param credentialOptions  the options to verify the credential with 
+ * 
  * @returns true if the signature matches the issuer
  */
 export async function verify(verifiableCredential: JWT, options?: CredentialOptions): Promise<boolean> {
