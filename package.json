@@ -1,7 +1,7 @@
 {
     "name": "@tonomy/antelope-ssi-toolkit",
     "author": "Jack Tanner",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "license": "MIT",
     "main": "dist/index.js",
     "typings": "dist/index.d.ts",
