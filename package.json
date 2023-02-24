@@ -63,9 +63,10 @@
     },
     "dependencies": {
         "@greymass/eosio": "^0.6.4",
-        "@tonomy/antelope-did": "^0.1.3",
-        "@tonomy/did-jwt": "^6.9.2",
+        "@tonomy/antelope-did": "^0.1.5",
+        "@tonomy/did-jwt": "^6.10.0",
         "@tonomy/did-jwt-vc": "^3.1.3",
-        "@tonomy/did-resolver": "^4.0.4"
+        "@tonomy/did-resolver": "^4.0.4",
+        "cross-fetch": "^3.1.5"
     }
 }

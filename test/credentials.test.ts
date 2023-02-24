@@ -6,11 +6,15 @@ global.TextDecoder = TextDecoder as any;
 import { createSigner, issue } from '../src/index';
 import { OutputType } from '../src/credentials.types';
 import { createPrivateKey } from './util/util';
-import { W3CCredential } from '@tonomy/did-jwt-vc';
+import { verifyCredential, W3CCredential } from '@tonomy/did-jwt-vc';
 import { decodeJWT } from '@tonomy/did-jwt';
 import { JWTDecoded } from '@tonomy/did-jwt/lib/JWT';
 import { Issuer, JWT } from '@tonomy/did-jwt-vc/lib/types';
 import { createMockVerify } from './util/mockResolver';
+import { PrivateKey } from '@greymass/eosio';
+import AntelopeDID from '@tonomy/antelope-did';
+import { tonomyDid, tonomyVcPayload } from './util/vc';
+import fetch from 'cross-fetch';
 
 describe('Issue and verify credential', () => {
     const now = new Date();
@@ -128,5 +132,34 @@ describe('Issue and verify credential', () => {
         }
         expect(jwt.signature).toBeTruthy();
 
+    })
+
+    it("test against jungle testnet",async ()=>{
+
+        const privateKey = PrivateKey.from("5KgcG8uRpoKWWbjsuJhyp9H6tAiy8yGVhuztMCSjXXj4oN1JPJB")
+
+        const antelopeDID = new AntelopeDID({ fetch, chain: 'https://jungle4.cryptolions.io' });
+    const resolver = { resolve: antelopeDID.resolve.bind(antelopeDID) };
+
+    const issuer: Issuer = {
+        did: tonomyDid + "#active",
+        signer: createSigner(privateKey),
+        alg: 'ES256K-R',
+    }
+    const resolved= await resolver.resolve(issuer.did)
+    console
+    .log("resolved",JSON.stringify(resolved))
+    const vc = await issue(tonomyVcPayload as any,{
+        issuer,
+        outputType: OutputType.JWT
+    })
+    
+
+    const result = await verifyCredential(vc,{
+        resolve: resolver.resolve
+    })
+
+
+    expect(result).toBeTruthy()
     })
 })
